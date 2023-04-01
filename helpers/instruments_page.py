@@ -1,6 +1,8 @@
 import streamlit as st
 
 from helpers.utils import print_widgets_separator
+from helpers.TEI48 import main_data as main_data_T48, main_zero as main_zero_T48, main_fonct as main_fonct_T48
+from helpers.TEI49 import main_data as main_data_T49, main_zero as main_zero_T49, main_fonct as main_fonct_T49
 
 def main():
     # ---------------------------- SIDEBAR -------------------------------- #
@@ -13,15 +15,15 @@ def main():
 
     if instruments == 'TEI 48':
         if data_type == 'DATA':
-            st.title('TEI 48 Data')
+            return  main_data_T48()
         elif data_type == 'FONCT':
-            st.title('TEI 48 Fonct')
+            return main_fonct_T48()
         elif data_type == 'ZERO':
-            st.title('TEI 48 Zero')
+            return main_zero_T48()
     elif instruments == 'TEI 49':
         if data_type == 'DATA':
-            st.title('TEI 49 Data')
+            return main_data_T49()
         elif data_type == 'FONCT':
-            st.title('TEI 49 Fonct')
+            return main_fonct_T49()
         elif data_type == 'ZERO':
-            st.title('TEI 49 Zero')
+            return main_zero_T49()

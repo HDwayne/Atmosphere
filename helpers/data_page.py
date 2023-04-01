@@ -1,5 +1,5 @@
 import streamlit as st
-from helpers.utils import checkFileName, getNumberFileImpoted, print_widgets_separator, delete_session_state_rule, read_zip_file, CheckZipFileName
+from helpers.utils import *
 
 
 def main():
@@ -14,16 +14,19 @@ def main():
         if not CheckZipFileName(file.name):
             st.sidebar.error('Le nom du fichier ne respecte pas la syntaxe')
         else:
-            delete_session_state_rule(lambda key: checkFileName(key, contain_date=False))
+            delete_session_state_rule(checkFileName)
 
             added_file = []
             dfs = read_zip_file(file)
+            for_each_df(dfs, deleteDaysFromDataframe, column_name='20t_Date')
             for key, value in dfs.items():
                 added_file.append(key)
                 if not key in st.session_state:
                     st.session_state[key] = value
                 else:
                     st.session_state[key] = st.session_state[key]
+
+
             st.sidebar.success(f'Les fichiers suivants ont été ajoutés : {", ".join(added_file)}')
             
     # ------------------------- PAGE CONTENT ----------------------------- #

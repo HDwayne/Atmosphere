@@ -125,13 +125,83 @@ def delete_session_state():
     for key in st.session_state.keys():
         del st.session_state[key]
 
-def delete_session_state_rule(rule):
+def delete_session_state_rule(rule: callable, **kwargs):
     """
     Delete all session state variables
     """
     for key in list(st.session_state.keys()):
-        if rule(key):
+        if rule(key, **kwargs):
             del st.session_state[key]
 
 def getNumberFileImpoted():
     return len([key for key in st.session_state.keys() if checkFileName(key, contain_date=False)])
+
+def for_each_df(dfs: dict[str, pd.DataFrame], func: callable, **kwargs) -> None:
+    """
+    Apply a function to each DataFrame in a dictionary of DataFrames.
+
+    Parameters
+    ----------
+    dfs : dict[str, pd.DataFrame]
+        A dictionary of DataFrames.
+
+    func : callable
+        A function to apply to each DataFrame.
+
+    **kwargs
+        Keyword arguments to pass to the function.
+
+    Raises
+    ------
+    TypeError
+        If dfs is not a dictionary of DataFrames.
+    TypeError
+        If dfs keys are not strings.
+    TypeError
+        If dfs values are not DataFrames.
+    TypeError
+        If func is not a callable.
+    """
+    if not isinstance(dfs, dict):
+        raise TypeError("dfs must be a dictionary of DataFrames")
+
+    if not all(isinstance(key, str) for key in dfs.keys()):
+        raise TypeError("dfs keys must be strings")
+
+    if not all(isinstance(df, pd.DataFrame) for df in dfs.values()):
+        raise TypeError("dfs values must be DataFrames")
+
+    if not callable(func):
+        raise TypeError("func must be a callable")
+
+    for df in dfs.values():
+        func(df, **kwargs)
+
+
+def deleteDaysFromDataframe(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Delete days from a date column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame to modify.
+
+    column_name : str
+        The name of the date column.
+
+    Returns
+    -------
+    pd.DataFrame
+        The modified DataFrame.
+    """
+    format="%d/%m/%Y,%H:%M:%S"
+    newformat="%H:%M:%S"
+
+    # si le dataframe est vide, on retourne un dataframe vide
+    if not df.empty:
+        try:
+            df[column_name] = pd.to_datetime(df[column_name], format=format)
+            df[column_name] = df[column_name].dt.strftime(newformat)
+        except ValueError:
+            print(f"Failed to convert column {column_name} to datetime64 on {df.Name}.")
