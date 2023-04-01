@@ -18,7 +18,7 @@ def main():
 
             added_file = []
             dfs = read_zip_file(file)
-            for_each_df(dfs, deleteDaysFromDataframe, column_name='20t_Date')
+            apply_time_dfs(dfs, ['20t_Date'], "%d/%m/%Y,%H:%M:%S")
             for key, value in dfs.items():
                 added_file.append(key)
                 if not key in st.session_state:

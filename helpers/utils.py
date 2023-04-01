@@ -49,7 +49,27 @@ def show_Laero_logo(width, padding, margin):
 
     return html_code
 
-def checkFileName(file_name, contain_date=True):
+
+def checkFileName(file_name: str, contain_date: bool = True):
+    """
+    Check if a file name is valid.
+
+    Parameters
+    ----------
+    file_name : str
+        The file name.
+    contain_date : bool, optional
+        If True, the file name must contain a date, by default True.
+
+    Returns
+    -------
+    bool
+        True if the file name is valid, False otherwise.
+    """
+    if not isinstance(file_name, str):
+        raise TypeError("file_name must be a string")
+    if not isinstance(contain_date, bool):
+        raise TypeError("contain_date must be a boolean")
     info = file_name.replace(".txt", "").split("_")
     if contain_date and len(info) != 4 or not contain_date and len(info) != 3:
         return False
@@ -64,7 +84,23 @@ def checkFileName(file_name, contain_date=True):
     return True
 
 
-def CheckZipFileName(file_name):
+def CheckZipFileName(file_name: str) -> bool:
+    """
+    Check if a zip file name is valid.
+
+    Parameters
+    ----------
+    file_name : str
+        The file name.
+
+    Returns
+    -------
+    bool
+        True if the file name is valid, False otherwise.
+    """
+    if not isinstance(file_name, str):
+        raise TypeError("file_name must be a string")
+    
     info = file_name.replace(".zip", "").split("_")
     if len(info) != 3:
         return False
@@ -110,31 +146,87 @@ def read_zip_file(zip_file_path: str) -> dict[str, pd.DataFrame]:
                 dfs[file_name] = df
     return dfs
 
-def getDateFromZipFileName(file_name):
+
+def getDateFromZipFileName(file_name: str) -> str:
+    """
+    Get the date from a zip file name.
+
+    Parameters
+    ----------
+    file_name : str
+        The file name.
+
+    Returns
+    -------
+    str
+        The date.
+    """
+    if not isinstance(file_name, str):
+        raise TypeError("file_name must be a string")
+    
     info = file_name.replace(".zip", "").split("_")
     return info[2]
 
-def deleteDateFromFileNames(file_name):
+
+def deleteDateFromFileNames(file_name: str) -> str:
+    """
+    Delete the date from a file name.
+
+    Parameters
+    ----------
+    file_name : str
+        The file name.
+
+    Returns
+    -------
+    str
+        The file name without the date.
+    """
+    if not isinstance(file_name, str):
+        raise TypeError("file_name must be a string")
+    
     info = file_name.replace(".txt", "").split("_")
     return info[0] + "_" + info[1] + "_" + info[2]
 
-def delete_session_state():
+
+def delete_session_state() -> None:
     """
     Delete all session state variables
     """
     for key in st.session_state.keys():
         del st.session_state[key]
 
-def delete_session_state_rule(rule: callable, **kwargs):
+
+def delete_session_state_rule(rule: callable, **kwargs) -> None:
     """
     Delete all session state variables
+
+    Parameters
+    ----------
+    rule : callable
+        A function that takes a key and returns a boolean.
+
+    **kwargs
+        Keyword arguments to pass to the function.
+
+    Raises
+    ------
+    TypeError
+        If rule is not a callable.
     """
+    if not callable(rule):
+        raise TypeError("rule must be a callable")
     for key in list(st.session_state.keys()):
         if rule(key, **kwargs):
             del st.session_state[key]
 
-def getNumberFileImpoted():
+
+def getNumberFileImpoted() -> int:
+    """
+    Get the number of files imported in the session state.
+    """
     return len([key for key in st.session_state.keys() if checkFileName(key, contain_date=False)])
+
 
 def for_each_df(dfs: dict[str, pd.DataFrame], func: callable, **kwargs) -> None:
     """
@@ -178,30 +270,45 @@ def for_each_df(dfs: dict[str, pd.DataFrame], func: callable, **kwargs) -> None:
         func(df, **kwargs)
 
 
-def deleteDaysFromDataframe(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+def apply_time_df(df: pd.DataFrame, time_columns: list[str], time_format: str | None = None) -> None:
     """
-    Delete days from a date column.
+    Convert columns in a DataFrame to datetime64.
 
-    Parameters
-    ----------
+    Parameters:
+    -----------
     df : pd.DataFrame
-        The DataFrame to modify.
+        The DataFrame to convert the columns in.
 
-    column_name : str
-        The name of the date column.
+    time_columns : list[str]
+        A list of column names to convert to datetime64.
 
-    Returns
-    -------
-    pd.DataFrame
-        The modified DataFrame.
+    time_format : str | None
+        The format of the time columns. If None, the default format is used.
     """
-    format="%d/%m/%Y,%H:%M:%S"
-    newformat="%H:%M:%S"
+    for col in time_columns:
+        if col in df.columns:
+            try:
+                df[col] = pd.to_datetime(df[col], format=time_format)
+            except ValueError as e:
+                print(
+                    f"Failed to convert column {col} to datetime64 on {df.Name}.")
+                print(e)
 
-    # si le dataframe est vide, on retourne un dataframe vide
-    if not df.empty:
-        try:
-            df[column_name] = pd.to_datetime(df[column_name], format=format)
-            df[column_name] = df[column_name].dt.strftime(newformat)
-        except ValueError:
-            print(f"Failed to convert column {column_name} to datetime64 on {df.Name}.")
+
+def apply_time_dfs(dfs: dict[str, pd.DataFrame], time_columns: list[str], time_format: str | None = None) -> None:
+    """
+    Convert columns in a dictionary of DataFrames to datetime64.
+
+    Parameters:
+    -----------
+    dfs : dict[str, pd.DataFrame]
+        The dictionary of DataFrames to convert the columns in.
+
+    time_columns : list[str]
+        A list of column names to convert to datetime64.
+
+    time_format : str | None
+        The format of the time columns. If None, the default format is used.
+    """
+    for_each_df(dfs, apply_time_df, time_columns=time_columns,
+                time_format=time_format)
