@@ -1,36 +1,28 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 
-st.title('Uber pickups in NYC')
+from helpers import home_page, data_page, instruments_page
+from helpers.utils import show_Laero_logo
 
-DATE_COLUMN = 'date/time'
-DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
-            'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
+def main():
+    st.set_page_config(
+        page_title="BE",
+        # page_icon="https://sersitive.eu/wp-content/uploads/cropped-icon.png",
+        layout="wide",
+        initial_sidebar_state="auto"
+    )
+    
+    html_code = show_Laero_logo(100, [1, 1, 1, 1], margin=[0, 0, 0, 0])
+    st.sidebar.markdown(html_code, unsafe_allow_html=True)
 
-@st.cache_data
-def load_data(nrows):
-    data = pd.read_csv(DATA_URL, nrows=nrows)
-    lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis='columns', inplace=True)
-    data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
-    return data
+    page = st.sidebar.selectbox("Pages", ['Accueil', 'Données', 'Instruments'])
 
-data_load_state = st.text('Loading data...')
-data = load_data(10000)
-data_load_state.text("Done! (using st.cache_data)")
+    if page == 'Accueil':
+        home_page.main()
+    if page == 'Données':
+        data_page.main()
+    if page == 'Instruments':
+        instruments_page.main()
 
-if st.checkbox('Show raw data'):
-    st.subheader('Raw data')
-    st.write(data)
 
-st.subheader('Number of pickups by hour')
-hist_values = np.histogram(data[DATE_COLUMN].dt.hour, bins=24, range=(0,24))[0]
-st.bar_chart(hist_values)
-
-# Some number in the range 0-23
-hour_to_filter = st.slider('hour', 0, 23, 17)
-filtered_data = data[data[DATE_COLUMN].dt.hour == hour_to_filter]
-
-st.subheader('Map of all pickups at %s:00' % hour_to_filter)
-st.map(filtered_data)
+if __name__ == '__main__':
+    main()
