@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+from helpers.filter import filter_dataframe
+from helpers.utils import print_widgets_separator
 
 XAXIS=dict(
     rangeselector=dict(
@@ -37,27 +39,42 @@ def main_data():
     st.header('TEI 49 Data')
 
     if 'Pdm_TEI49_Data' in st.session_state:
-        Pdm_TEI49_Data = st.session_state.Pdm_TEI49_Data
+        Pdm_TEI49_Data = filter_dataframe(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
 
-        st.write(Pdm_TEI49_Data.describe().loc[['min', 'max', 'mean']])
+        print_widgets_separator()
 
-        fig_ozone = go.Figure()
-        fig_ozone.add_trace(go.Scatter(x=Pdm_TEI49_Data['20t_Date'], y=Pdm_TEI49_Data['4d_Ozone']))
+        left, right = st.columns((1, 1))
+        left.write('Statistiques sur les données brutes')
+        left.write(Pdm_TEI49_Data.describe().loc[['min', 'max', 'mean', 'count']])
+        right.write('Statistiques sur les données filtrées')
+        right.write(Pdm_TEI49_Data[Pdm_TEI49_Data['valid'] == True].describe().loc[['min', 'max', 'mean', 'count']])
+
+        # TODO: Color blue if valid, red if not (soould'nt depend on the size of the dataset)
+
+        if 'valid' not in Pdm_TEI49_Data.columns:
+            fig_ozone= px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Ozone')
+            fig_pression= px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Pression')
+        else:
+            fig_ozone = px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Ozone', color='valid', markers=True, color_discrete_sequence=['blue', 'red'])
+            fig_pression = px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Pression', color='valid', markers=True, color_discrete_sequence=['blue', 'red'])
+        
         fig_ozone.update_layout(title_text="Mesure d'Ozone")
-        fig_ozone.update_layout(xaxis=XAXIS, yaxis=YAXYS)
+        fig_ozone.update_layout(xaxis=XAXIS)
         st.plotly_chart(fig_ozone, use_container_width=True)
 
-        fig_pression = go.Figure()
-        fig_pression.add_trace(go.Scatter(x=Pdm_TEI49_Data['20t_Date'], y=Pdm_TEI49_Data['4d_Pression']))
         fig_pression.update_layout(title_text="Mesure de Pression")
-        fig_pression.update_layout(xaxis=XAXIS, yaxis=YAXYS)
-        st.plotly_chart(fig_pression, use_container_width=True) 
+        fig_pression.update_layout(xaxis=XAXIS)
+        st.plotly_chart(fig_pression, use_container_width=True)
+
+        if 'Pdm_TEI49_Data_filter' in st.session_state:
+            st.subheader('Filtre appliqué (Debug)')
+            st.write(st.session_state["Pdm_TEI49_Data_filter"])
     else:
         st.error('Pdm_TEI49_Data n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
 
+
 def main_zero():
     st.title('TEI 49 Zero')
-
     st.info('Cet instrument ne fournit pas de données de zéro.')
           
 
