@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-from helpers.filter import filter_dataframe
+from helpers.filter import filters_widgets, filter_dataframe
 from helpers.utils import print_widgets_separator
 
 XAXIS=dict(
@@ -39,8 +39,10 @@ def main_data():
     st.header('TEI 49 Data')
 
     if 'Pdm_TEI49_Data' in st.session_state:
+        # Pdm_TEI49_Data = filter_dataframe(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
+        filters_widgets(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
         Pdm_TEI49_Data = filter_dataframe(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
-
+        
         print_widgets_separator()
 
         left, right = st.columns((1, 1))
@@ -48,6 +50,8 @@ def main_data():
         left.write(Pdm_TEI49_Data.describe().loc[['min', 'max', 'mean', 'count']])
         right.write('Statistiques sur les données filtrées')
         right.write(Pdm_TEI49_Data[Pdm_TEI49_Data['valid'] == True].describe().loc[['min', 'max', 'mean', 'count']])
+
+        print_widgets_separator()
 
         # TODO: Color blue if valid, red if not (soould'nt depend on the size of the dataset)
 
