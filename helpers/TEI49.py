@@ -2,8 +2,9 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-from helpers.filter import filters_widgets, filter_dataframe
+from helpers.filter import filters_widgets, filter_dataframe, getIndexRow, setRowInvalid
 from helpers.utils import print_widgets_separator
+from streamlit_plotly_events import plotly_events
 
 XAXIS=dict(
     rangeselector=dict(
@@ -39,7 +40,6 @@ def main_data():
     st.header('TEI 49 Data')
 
     if 'Pdm_TEI49_Data' in st.session_state:
-        # Pdm_TEI49_Data = filter_dataframe(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
         filters_widgets(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
         Pdm_TEI49_Data = filter_dataframe(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
         
@@ -64,11 +64,22 @@ def main_data():
         
         fig_ozone.update_layout(title_text="Mesure d'Ozone")
         fig_ozone.update_layout(xaxis=XAXIS)
-        st.plotly_chart(fig_ozone, use_container_width=True)
+        fig_ozone = plotly_events(fig_ozone, key="ozone", click_event=False, select_event=True)
+        
+        rows = getIndexRow(Pdm_TEI49_Data, "Pdm_TEI49_Data_filter", fig_ozone, "4d_Ozone")
+        st.write(rows)
+
+        if st.button('definir comme invalides'):
+            Pdm_TEI49_Data = setRowInvalid(Pdm_TEI49_Data, getIndexRow(Pdm_TEI49_Data, "Pdm_TEI49_Data_filter", fig_ozone, "4d_Ozone"))
+            st.write(Pdm_TEI49_Data['valid'].value_counts())
+            # FIXME : plot update with new df
+
+        st.write(Pdm_TEI49_Data['valid'].value_counts())
+
 
         fig_pression.update_layout(title_text="Mesure de Pression")
         fig_pression.update_layout(xaxis=XAXIS)
-        st.plotly_chart(fig_pression, use_container_width=True)
+        fig_pression = plotly_events(fig_pression, key="pression")
 
         if 'Pdm_TEI49_Data_filter' in st.session_state:
             st.subheader('Filtre appliqué (Debug)')
