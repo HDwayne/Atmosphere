@@ -8,7 +8,7 @@ def main():
     # ---------------------------- SIDEBAR -------------------------------- #
     print_widgets_separator(1, sidebar=True)
 
-    instruments = st.sidebar.selectbox("Instrument", ['TEI 48', 'TEI 49'])
+    instruments = st.sidebar.selectbox("Instrument", ['TEI 49', 'TEI 48'])
     data_type = st.sidebar.selectbox("Type de données", ['DATA', 'FONCT', 'ZERO'])
 
     # ------------------------- PAGE CONTENT ----------------------------- #
