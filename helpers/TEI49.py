@@ -136,3 +136,19 @@ def main_fonct():
         st.plotly_chart(fig_cell, use_container_width=True)
     else:
         st.error('Pdm_TEI49_Fonct n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
+
+    # TODO : Finish the data validation (comparind data against parameters) -- point 4 in exigence
+    if 'Pdm_TEI49_Data' and 'Pdm_TEI49_Fonct' in st.session_state:
+        data = st.session_state.Pdm_TEI49_Data
+        fonct = st.session_state.Pdm_TEI49_Fonct
+
+        data = data.set_index('20t_Date')
+        fonct = fonct.set_index('20t_Date')
+
+        lower_threshold = fonct.index[0]
+        data_timestamp = data.index.get_loc(lower_threshold, method='nearest')
+        data_sliced = data.iloc[data_timestamp:]
+        merged_df = pd.merge(data_sliced, fonct, left_index=True, right_index=True)
+
+        st.title("Merged dataframe (DATA & FONCT)")
+        st.dataframe(merged_df)

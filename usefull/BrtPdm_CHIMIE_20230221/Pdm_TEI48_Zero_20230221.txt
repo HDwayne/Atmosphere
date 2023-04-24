@@ -1,0 +1,1 @@
+20t_DateZero,20t_DateMaz,5d_moy,5.1f_ect,5d_vMin,5d_vMax,5d_oldBkg,5d_newBkg

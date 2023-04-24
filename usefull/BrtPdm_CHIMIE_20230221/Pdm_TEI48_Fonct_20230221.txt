@@ -1,0 +1,1 @@
+20t_Date,8s_flag,6.4f_ratio,6.0f_agci,5.1f_intT,5.2f_flow,5d_bkg,5.2f_coef,6.1f_biasvoltage

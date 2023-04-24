@@ -26,7 +26,6 @@ def main():
                 else:
                     st.session_state[key] = st.session_state[key]
 
-
             st.sidebar.success(f'Les fichiers suivants ont été ajoutés : {", ".join(added_file)}')
             
     # ------------------------- PAGE CONTENT ----------------------------- #
