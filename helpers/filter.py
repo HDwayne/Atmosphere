@@ -2,6 +2,7 @@ from pandas.api.types import is_datetime64_any_dtype
 import pandas as pd
 import streamlit as st
 
+
 def reset_filter_widgets_to_default(filter_name) -> None:
     """
     Reset all filter widgets to their default values.
@@ -15,6 +16,7 @@ def reset_filter_widgets_to_default(filter_name) -> None:
         raise TypeError(f"Expected filter_name to be a str, got {type(filter_name)} instead.")
     if filter_name in st.session_state:
       del st.session_state[filter_name]
+
 
 def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
     if not filter_name in st.session_state:
@@ -40,21 +42,37 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
               value=selected_opts,
               key=str(y),
             )
+        
+        # show 'invalid_rows'
+        if 'invalid_rows' in st.session_state[filter_name]:
+            widget_dict['invalid_rows'] = st.multiselect(
+                label="Lignes invalides",
+                options=df.index.tolist(),
+                default=st.session_state[filter_name]['invalid_rows'],
+                key="invalid_rows",
+            )
 
         submit_button = st.form_submit_button("Appliquer les filtres")
 
         if submit_button:
             for key, value in widget_dict.items():
-                # only save filter if itsn't the default value
-                if not value == (df[key].min(), df[key].max()):
-                    st.session_state[filter_name][key] = value
-    
+                if key == 'invalid_rows':
+                    if len(widget_dict['invalid_rows']) == 0:
+                        del st.session_state[filter_name]['invalid_rows']
+                    else:
+                        st.session_state[filter_name]['invalid_rows'] = widget_dict['invalid_rows']
+                else:
+                    # only save filter if itsn't the default value
+                    if not value == (df[key].min(), df[key].max()):
+                        st.session_state[filter_name][key] = value
+        
         filter_widgets.button(
             "Réinitialiser les filtres",
             key="reset_buttons",
             on_click=reset_filter_widgets_to_default,
             args=(filter_name,),
         )
+
 
 def filter_dataframe(df: pd.DataFrame, filter_name: str) -> pd.DataFrame:
     """
@@ -80,7 +98,10 @@ def filter_dataframe(df: pd.DataFrame, filter_name: str) -> pd.DataFrame:
         return filtered_df
 
     for key, value in st.session_state[filter_name].items():
-        filtered_df.loc[~filtered_df[key].between(*value), 'valid'] = False
+        if key == 'invalid_rows':
+            filtered_df.loc[value, 'valid'] = False
+        else:
+            filtered_df.loc[~filtered_df[key].between(*value), 'valid'] = False
 
     return filtered_df
 
@@ -115,7 +136,8 @@ def getIndexRow(filtered_df: pd.DataFrame, filter_name: str, points:list[dict], 
         index.append(id)
     return index
 
-def setRowInvalid(filtered_df: pd.DataFrame, index: list[int]) -> pd.DataFrame:
+
+def addToInvalidRow(filter_name: str, index: list[int]) -> pd.DataFrame:
     """
     Set the rows with the given index to invalid.
 
@@ -126,10 +148,10 @@ def setRowInvalid(filtered_df: pd.DataFrame, index: list[int]) -> pd.DataFrame:
     index : list[int]
         The index of the rows to set to invalid.
     """
-    print(filtered_df['valid'].value_counts())
+    if not filter_name in st.session_state:
+        st.session_state[filter_name] = {}
 
-    for i in index:
-        filtered_df.loc[i, 'valid'] = False
-
-    print(filtered_df['valid'].value_counts())
-    return filtered_df
+    if not 'invalid_rows' in st.session_state[filter_name]:
+        st.session_state[filter_name]['invalid_rows'] = []
+    st.session_state[filter_name]['invalid_rows'] += index
+    st.session_state[filter_name]['invalid_rows'] = list(set(st.session_state[filter_name]['invalid_rows']))

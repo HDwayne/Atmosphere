@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-from helpers.filter import filters_widgets, filter_dataframe, getIndexRow, setRowInvalid
+from helpers.filter import filters_widgets, filter_dataframe, getIndexRow, addToInvalidRow
 from helpers.utils import print_widgets_separator
 from streamlit_plotly_events import plotly_events
 
@@ -32,9 +32,11 @@ XAXIS=dict(
     type="date",
 )
 
+
 YAXYS=dict(
     side="right",
 )
+
 
 def main_data():
     st.header('TEI 49 Data')
@@ -44,7 +46,7 @@ def main_data():
         Pdm_TEI49_Data = filter_dataframe(st.session_state.Pdm_TEI49_Data, "Pdm_TEI49_Data_filter")
         
         print_widgets_separator()
-
+    
         left, right = st.columns((1, 1))
         left.write('Statistiques sur les données brutes')
         left.write(Pdm_TEI49_Data.describe().loc[['min', 'max', 'mean', 'count']])
@@ -55,31 +57,35 @@ def main_data():
 
         # TODO: Color blue if valid, red if not (soould'nt depend on the size of the dataset)
 
-        if 'valid' not in Pdm_TEI49_Data.columns:
-            fig_ozone= px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Ozone')
-            fig_pression= px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Pression')
-        else:
-            fig_ozone = px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Ozone', color='valid', markers=True, color_discrete_sequence=['blue', 'red'])
-            fig_pression = px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Pression', color='valid', markers=True, color_discrete_sequence=['blue', 'red'])
-        
-        fig_ozone.update_layout(title_text="Mesure d'Ozone")
-        fig_ozone.update_layout(xaxis=XAXIS)
-        fig_ozone = plotly_events(fig_ozone, key="ozone", click_event=False, select_event=True)
-        
-        rows = getIndexRow(Pdm_TEI49_Data, "Pdm_TEI49_Data_filter", fig_ozone, "4d_Ozone")
-        st.write(rows)
+        with st.form(key='form_ozone'):
+            if 'valid' not in Pdm_TEI49_Data.columns:
+                fig_ozone= px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Ozone')
+            else:
+                fig_ozone = px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Ozone', color='valid', markers=True, color_discrete_sequence=['blue', 'red'])
+            
+            fig_ozone.update_layout(title_text="Mesure d'Ozone")
+            fig_ozone.update_layout(xaxis=XAXIS)
+            # fig_ozone = plotly_events(fig_ozone, key="ozone", click_event=False, select_event=True)
+            fig_ozone_event = plotly_events(fig_ozone, key="ozone_event", click_event=False, select_event=True)
+            
+            if st.form_submit_button('definir comme invalides'):
+                rows = getIndexRow(Pdm_TEI49_Data, "Pdm_TEI49_Data_filter", fig_ozone_event, "4d_Ozone")
+                addToInvalidRow("Pdm_TEI49_Data_filter", rows)
+            
+        with st.form(key='form_pression'):
+            if 'valid' not in Pdm_TEI49_Data.columns:
+                fig_pression= px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Pression')
+            else:
+                fig_pression = px.line(data_frame=Pdm_TEI49_Data, x='20t_Date', y='4d_Pression', color='valid', markers=True, color_discrete_sequence=['blue', 'red'])
 
-        if st.button('definir comme invalides'):
-            Pdm_TEI49_Data = setRowInvalid(Pdm_TEI49_Data, getIndexRow(Pdm_TEI49_Data, "Pdm_TEI49_Data_filter", fig_ozone, "4d_Ozone"))
-            st.write(Pdm_TEI49_Data['valid'].value_counts())
-            # FIXME : plot update with new df
+            fig_pression.update_layout(title_text="Mesure de Pression")
+            fig_pression.update_layout(xaxis=XAXIS)
+            # fig_pression = plotly_events(fig_pression, key="pression")            
+            fig_pression_event = plotly_events(fig_pression, key="pression_event", click_event=False, select_event=True)
 
-        st.write(Pdm_TEI49_Data['valid'].value_counts())
-
-
-        fig_pression.update_layout(title_text="Mesure de Pression")
-        fig_pression.update_layout(xaxis=XAXIS)
-        fig_pression = plotly_events(fig_pression, key="pression")
+            if st.form_submit_button('definir comme invalides'):
+                rows = getIndexRow(Pdm_TEI49_Data, "Pdm_TEI49_Data_filter", fig_pression_event, "4d_Pression")
+                addToInvalidRow("Pdm_TEI49_Data_filter", rows)
 
         if 'Pdm_TEI49_Data_filter' in st.session_state:
             st.subheader('Filtre appliqué (Debug)')
