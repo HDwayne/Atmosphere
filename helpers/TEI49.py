@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
 from helpers.filter import filters_widgets, filter_dataframe
 from helpers.utils import print_widgets_separator
 
@@ -91,37 +90,27 @@ def main_fonct():
         st.write(Pdm_TEI49_Fonct.describe().loc[['min', 'max', 'mean']])
 
         with st.container():
-            fig_flow = go.Figure()
-            fig_flow.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['4.2f_flowA'], name='4.2f_flowA'))
-            fig_flow.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['4.2f_flowB'], name='4.2f_flowB'))
+            fig_flow = px.line(data_frame=Pdm_TEI49_Fonct, x='20t_Date', y=['4.2f_flowA', '4.2f_flowB'])
             fig_flow.update_layout(title_text="Mesure de débit d'air des cellules A et B")
             fig_flow.update_layout(xaxis=XAXIS)
             st.plotly_chart(fig_flow, use_container_width=True)
 
-            fig_bkg = go.Figure()
-            fig_bkg.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['3.1f_bkg'], name='3.1f_bkg'))
+            fig_bkg = px.line(data_frame=Pdm_TEI49_Fonct, x='20t_Date', y=['3.1f_bkg'])
             fig_bkg.update_layout(title_text="Mesure de fond")
             fig_bkg.update_layout(xaxis=XAXIS)
             st.plotly_chart(fig_bkg, use_container_width=True)
 
-            fig_coef = go.Figure()
-            fig_coef.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['5.2f_coef'], name='5.2f_coef'))
+            fig_coef = px.line(data_frame=Pdm_TEI49_Fonct, x='20t_Date', y=['5.2f_coef'])
             fig_coef.update_layout(title_text="Mesure de coefficient")
             fig_coef.update_layout(xaxis=XAXIS)
             st.plotly_chart(fig_coef, use_container_width=True)
 
-            fig_temp = go.Figure()
-            fig_temp.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['5.1f_benchT'], name='5.1f_benchT'))
-            fig_temp.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['5.1f_O3lampT'], name='5.1f_O3lampT'))
-            fig_temp.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['5.1f_intT'], name='5.1f_intT'))
-            fig_temp.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['5.1f_lampSetting'], name='5.1f_lampSetting'))
+            fig_temp = px.line(data_frame=Pdm_TEI49_Fonct, x='20t_Date', y=['5.1f_benchT', '5.1f_O3lampT', '5.1f_intT', '5.1f_lampSetting'])
             fig_temp.update_layout(title_text="Mesure de température")
             fig_temp.update_layout(xaxis=XAXIS)
             st.plotly_chart(fig_temp, use_container_width=True)
 
-            fig_cell = go.Figure()
-            fig_cell.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['6d_cellAInt'], name='6d_cellAInt'))
-            fig_cell.add_trace(go.Scatter(x=Pdm_TEI49_Fonct['20t_Date'], y=Pdm_TEI49_Fonct['6d_cellBInt'], name='6d_cellBInt'))
+            fig_cell = px.line(data_frame=Pdm_TEI49_Fonct, x='20t_Date', y=['6d_cellAInt', '6d_cellBInt'])
             fig_cell.update_layout(title_text="Mesure d'intensité des cellules A et B")
             fig_cell.update_layout(xaxis=XAXIS)
             st.plotly_chart(fig_cell, use_container_width=True)
