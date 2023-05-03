@@ -28,11 +28,11 @@ def main():
         elif choice == "📥 Serveur distant":
             site = st.text_input("Saisissez l'adresse du serveur 👇")
     
-    if file is None:
-        st.header('Outils de visualisation des données météorologiques et chimiques')
 
-        st.write("Cet outil permet de visualiser les données provenant d'un analyseur d'ozone et d'un analyseur de monoxyde de carbone (sous forme graphique).")
-        st.write("👈 Commencez par choisir l'origine de données, et puis soit mettez en ligne un fichier local, soit saisissez l'adresse du serveur distant !")
+    st.header('Outils de visualisation des données météorologiques et chimiques')
+
+    st.write("Cet outil permet de visualiser les données provenant d'un analyseur d'ozone et d'un analyseur de monoxyde de carbone (sous forme graphique).")
+    st.write("👈 Commencez par choisir l'origine de données, et puis soit mettez en ligne un fichier local, soit saisissez l'adresse du serveur distant !")
 
     if choice == "📁 Fichier local" and file is not None:
         if not CheckZipFileName(file.name):
@@ -88,17 +88,17 @@ def main():
                 if b2:
                     st.write('Fichier téléchargé.')
 
-            #st.subheader('Données enregistrées: ')
-            with st.expander("Cliquez ici pour consulter les données brutes 👋"):
-                number_file = getNumberFileImpoted()
-                if number_file == 0:
-                    st.info('Aucune donnée enregistré, veuillez importer un fichier zip depuis la section de gauche.')
-                elif number_file != 5:
-                    st.warning('Le fichier zip utilisé ne contient pas le nombre de fichiers attendus. certaines fonctionnalités sont susceptibles de ne pas fonctionner correctement.')
-                
-                for key, value in st.session_state.items():
-                    if checkFileName(key, contain_date=False):
-                        st.write(key, value)
+    #st.subheader('Données enregistrées: ')
+    with st.expander("Cliquez ici pour consulter les données brutes 👋"):
+        number_file = getNumberFileImpoted()
+        if number_file == 0:
+            st.info('Aucune donnée enregistré, veuillez importer un fichier zip depuis la section de gauche.')
+        elif number_file != 5:
+            st.warning('Le fichier zip utilisé ne contient pas le nombre de fichiers attendus. certaines fonctionnalités sont susceptibles de ne pas fonctionner correctement.')
+        
+        for key, value in st.session_state.items():
+            if checkFileName(key, contain_date=False):
+                st.write(key, value)
 
 
 if __name__ == '__main__':

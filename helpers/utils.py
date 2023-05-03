@@ -106,8 +106,8 @@ def CheckZipFileName(file_name: str) -> bool:
         return False
     if info[0] != "BrtPdm":
         return False
-    if info[1] != "CHIMIE":
-        return False
+    #if info[1] != "CHIMIE":
+    #    return False
     if len(info[2]) != 8:
         return False
     return True
