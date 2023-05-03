@@ -313,3 +313,8 @@ def apply_time_dfs(dfs: dict[str, pd.DataFrame], time_columns: list[str], time_f
     """
     for_each_df(dfs, apply_time_df, time_columns=time_columns,
                 time_format=time_format)
+    
+def export_meandata(df):
+    with open('output.txt', 'w') as f:
+        f.write(df.describe().to_csv(sep='\t'))
+    return f

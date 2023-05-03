@@ -1,6 +1,6 @@
 import streamlit as st
 from helpers.utils import *
-from helpers.TEI48 import main_data as main_data_T48, main_zero as main_zero_T48, main_fonct as main_fonct_T48
+from helpers.TEI48 import *
 from helpers.TEI49 import main_data as main_data_T49, main_zero as main_zero_T49, main_fonct as main_fonct_T49, main_data_new as data_T49, main_fonct_new as fonct_T49
 
 
@@ -51,6 +51,15 @@ def main():
                     st.session_state[key] = value
                 else:
                     st.session_state[key] = st.session_state[key]
+                    # Iterate over the columns in the DataFrame
+                for col in value.columns:
+                    # Check if the column name contains "\r"
+                    if '\r' in col:
+                        # Clean the column name by removing "\r"
+                        new_col = col.replace('\r', '')
+                        # Rename the column in the DataFrame
+                        value.rename(columns={col: new_col}, inplace=True)
+
 
             # display page
             st.sidebar.success(f'Les fichiers suivants ont été ajoutés : {", ".join(added_file)}')
@@ -62,15 +71,12 @@ def main():
             with tei48:
                 DATA, FONCT, ZERO = st.tabs(["Données principales", "Fonctionnement", "Zéro"])
                 with DATA:
-                    main_data_T48()
+                    data_TEI48()
                 with FONCT:
-                    main_fonct_T48()
+                    fonct_TEI48()
                 with ZERO:
-                    main_zero_T48()
-                b1 = st.button("Telecharger les données moyennées", key="1")
+                    zero_TEI48()
                 b2 = st.button("Telecharger les paramètres de configuration de l\'outil", key="2")
-                if b1:
-                    st.write('Fichier téléchargé.')
                 if b2:
                     st.write('Fichier téléchargé.')
             
@@ -84,10 +90,7 @@ def main():
                     fonct_T49()
                 with ZERO:
                     main_zero_T49()
-                b1 = st.button("Telecharger les données moyennées", key="3")
                 b2 = st.button("Telecharger les paramètres de configuration de l\'outil", key="4")
-                if b1:
-                    st.write('Fichier téléchargé.')
                 if b2:
                     st.write('Fichier téléchargé.')
 

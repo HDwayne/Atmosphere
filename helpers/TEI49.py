@@ -93,6 +93,14 @@ def main_data_new():
         st.line_chart(TEI49_Data, x='20t_Date', y=y_data)
         st.write('Statistiques sur les données brutes')
         st.write(TEI49_Data.describe().loc[['min', 'max', 'mean', 'count']])
+
+        with open('output.txt', 'w') as f:
+            f.write(TEI49_Data.describe().loc[['mean']].to_csv(sep='\n'))
+
+        download_button = st.download_button(label="Télecharger les données moyenées", data=open('output.txt', 'rb').read(), file_name="TEI49 Data Moyenné.txt", mime='text/plain', key=76)
+        if download_button:
+            st.success('Fichier télechargé !', icon="✅")
+
     else:
         st.error('Pdm_TEI49_Data n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
 
@@ -144,6 +152,15 @@ def main_fonct_new():
         st.line_chart(TEI49_Fonct, x='20t_Date', y=y_data)
         st.write('Statistiques sur les données brutes')
         st.write(TEI49_Fonct.describe().loc[['min', 'max', 'mean', 'count']])
+
+        with open('output.txt', 'w') as f:
+            f.write(TEI49_Fonct.describe().loc[['mean']].to_csv(sep='\n'))
+
+        download_button = st.download_button(label="Télecharger les données moyenées", data=open('output.txt', 'rb').read(), file_name="TEI49 Fonct. Moyenné.txt", mime='text/plain', key=77)
+
+        if download_button:
+            st.success('Fichier télechargé !', icon="✅")
+
     else:
         st.error('Pdm_TEI49_Data n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
 
