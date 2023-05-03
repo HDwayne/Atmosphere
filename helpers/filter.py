@@ -23,7 +23,7 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
       st.session_state[filter_name] = {}
     
     filter_widgets = st.container()
-    filter_widgets.warning("Veillez cliquer sur le bouton 'Appliquer les filtres' pour appliquer les filtres.")
+    # filter_widgets.warning("Veillez cliquer sur le bouton 'Appliquer les filtres' pour appliquer les filtres.")
 
     widget_dict = {}
     with filter_widgets.form(key="filter_form"):
@@ -105,39 +105,6 @@ def filter_dataframe(df: pd.DataFrame, filter_name: str) -> pd.DataFrame:
 
     return filtered_df
 
-
-def getIndexRow(filtered_df: pd.DataFrame, filter_name: str, points:list[dict], column: str) -> list[int]:
-    """
-    Get the index of the rows in the dataframe that match the points.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        The dataframe to filter.
-    filter_name : str
-        The name of the filter to use.
-    points : list[dict]
-        The points to match.
-
-    Returns
-    -------
-    list[int]
-        The index of the rows in the dataframe that match the points.
-    """
-    index = []
-    for point in points:
-        if point['pointIndex'] == None:
-            continue
-        _min, _max = st.session_state[filter_name].get(column, (filtered_df[column].min(), filtered_df[column].max()))
-        if not _min <= point['y'] <= _max:
-            id = filtered_df.loc[filtered_df['valid'] == False].index[point['pointIndex']]
-        else:
-            id = filtered_df.loc[filtered_df['valid'] == True].index[point['pointIndex']]
-        index.append(id)
-    return index
-
-
-def addToInvalidRow(filter_name: str, index: list[int]) -> pd.DataFrame:
     """
     Set the rows with the given index to invalid.
 

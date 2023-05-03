@@ -12,10 +12,10 @@ def main():
     )
 
     with st.sidebar:
-        # html_code = show_Laero_logo(100, [1, 1, 1, 1], margin=[0, 0, 0, 0])
-        # st.markdown(html_code, unsafe_allow_html=True)
+        html_code = show_Laero_logo(100, [1, 1, 1, 1], margin=[0, 0, 0, 0])
+        st.markdown(html_code, unsafe_allow_html=True)
 
-        # print_widgets_separator(sidebar=True)
+        print_widgets_separator(sidebar=True)
 
         choice = st.radio(
             "📊 Sélectionnez la source de données",
@@ -38,8 +38,10 @@ def main():
         if not CheckZipFileName(file.name):
             st.sidebar.error('Le nom du fichier ne respecte pas la syntaxe')
         else:
+            # remove file from session state
             delete_session_state_rule(checkFileName)
 
+            # add file to session state
             added_file = []
             dfs = read_zip_file(file)
             apply_time_dfs(dfs, ['20t_Date'], "%d/%m/%Y,%H:%M:%S")
@@ -50,6 +52,7 @@ def main():
                 else:
                     st.session_state[key] = st.session_state[key]
 
+            # display page
             st.sidebar.success(f'Les fichiers suivants ont été ajoutés : {", ".join(added_file)}')
 
             # Donnees enregistreees - donnees brutes etaient ici
