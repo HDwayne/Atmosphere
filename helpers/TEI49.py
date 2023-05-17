@@ -96,11 +96,6 @@ def main_data_new():
 
         with open('output.txt', 'w') as f:
             f.write(TEI49_Data.describe().loc[['mean']].to_csv(sep='\n'))
-
-        download_button = st.download_button(label="Télecharger les données moyenées", data=open('output.txt', 'rb').read(), file_name="TEI49 Data Moyenné.txt", mime='text/plain', key=76)
-        if download_button:
-            st.success('Fichier télechargé !', icon="✅")
-
     else:
         st.error('Pdm_TEI49_Data n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
 
@@ -145,7 +140,6 @@ def main_fonct():
 def main_fonct_new():
     if 'Pdm_TEI49_Fonct' in st.session_state:
         TEI49_Fonct = st.session_state.Pdm_TEI49_Fonct
-
         y_data = st.selectbox( 
             'Veuillez choisir les données pour l\'axe x.',
             (col for col in TEI49_Fonct.columns if col != "valid" and col !='20t_Date'))
@@ -155,12 +149,6 @@ def main_fonct_new():
 
         with open('output.txt', 'w') as f:
             f.write(TEI49_Fonct.describe().loc[['mean']].to_csv(sep='\n'))
-
-        download_button = st.download_button(label="Télecharger les données moyenées", data=open('output.txt', 'rb').read(), file_name="TEI49 Fonct. Moyenné.txt", mime='text/plain', key=77)
-
-        if download_button:
-            st.success('Fichier télechargé !', icon="✅")
-
     else:
         st.error('Pdm_TEI49_Data n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
 

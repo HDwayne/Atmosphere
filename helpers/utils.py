@@ -1,5 +1,5 @@
 import base64
-from io import StringIO
+from io import StringIO, BytesIO
 import zipfile
 import pandas as pd
 import streamlit as st
@@ -318,3 +318,14 @@ def export_meandata(df):
     with open('output.txt', 'w') as f:
         f.write(df.describe().to_csv(sep='\t'))
     return f
+
+@st.cache_data
+def convert_df(df):
+    return df.to_csv(index=False).encode('utf-8')
+
+@st.cache_data
+def generate_zip(df, df_name):
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as zf:
+        zf.writestr(f'{df_name}.txt', df.to_csv(index=False).encode('utf-8'))
+    return buffer.getvalue()

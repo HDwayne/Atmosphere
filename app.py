@@ -1,8 +1,8 @@
 import streamlit as st
 from helpers.utils import *
 from helpers.TEI48 import *
-from helpers.TEI49 import main_data as main_data_T49, main_zero as main_zero_T49, main_fonct as main_fonct_T49, main_data_new as data_T49, main_fonct_new as fonct_T49
-
+from helpers.TEI49 import main_data , main_zero as main_zero_T49, main_fonct as main_fonct_T49, main_data_new as data_T49, main_fonct_new as fonct_T49
+from helpers.utils import convert_df, generate_zip
 
 def main():
     st.set_page_config(
@@ -76,23 +76,30 @@ def main():
                     fonct_TEI48()
                 with ZERO:
                     zero_TEI48()
-                b2 = st.button("Telecharger les paramètres de configuration de l\'outil", key="2")
-                if b2:
-                    st.write('Fichier téléchargé.')
             
             with tei49:
                 DATA, FONCT, ZERO = st.tabs(["Données principales", "Fonctionnement", "Zéro"])
                 with DATA:
-                    #main_data_T49()
                     data_T49()
                 with FONCT:
-                    #main_fonct_T49()
                     fonct_T49()
                 with ZERO:
                     main_zero_T49()
-                b2 = st.button("Telecharger les paramètres de configuration de l\'outil", key="4")
-                if b2:
-                    st.write('Fichier téléchargé.')
+          
+            download_data = st.download_button(
+                label="Télecharger les données", 
+                data=generate_zip(st.session_state.Pdm_TEI48_Data, "Pdm_TEI48_Data"),
+                file_name="data.zip", 
+                mime="application/zip",
+                key=67
+                )
+            if download_data:
+                st.success('Fichier télechargé !', icon="✅")
+
+
+            b2 = st.button("Telecharger les paramètres de configuration de l\'outil", key="4")
+            if b2:
+                st.write('Fichier téléchargé.')
 
             #st.subheader('Données enregistrées: ')
             with st.expander("Cliquez ici pour consulter les données brutes 👋"):
