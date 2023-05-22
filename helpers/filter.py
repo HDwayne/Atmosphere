@@ -6,9 +6,11 @@ from pandas.api.types import is_numeric_dtype, is_datetime64_any_dtype
 
 def import_filter_params(filter_name) -> None:
     if "yaml" in st.session_state and filter_name in st.session_state["yaml"]:
+        # yaml to filters
         filter_params = st.session_state["yaml"][filter_name]
         st.session_state["filters"][filter_name] = filter_params
 
+        # yaml to widgets form
         for key, value in filter_params.items():
             if f"filter_form.{filter_name}.{key}" in st.session_state:
                 st.session_state[f"filter_form.{filter_name}.{key}"] = (
@@ -18,9 +20,11 @@ def import_filter_params(filter_name) -> None:
 
 
 def reset_filter_params(df, filter_name) -> None:
+    # delete filter
     if filter_name in st.session_state["filters"]:
         del st.session_state["filters"][filter_name]
 
+    # restore default widgets form
     for y in df.select_dtypes(include=[np.number]):
         _min, _max = float(df[y].min()), float(df[y].max())
         if pd.notnull(_min) and pd.notnull(_max) and _min != _max:
@@ -31,6 +35,7 @@ def save_filter_params(df, filter_name, widget_dict):
     if filter_name not in st.session_state["filters"]:
         st.session_state["filters"][filter_name] = {}
 
+    # widgets form to filters
     for key, value in widget_dict.items():
         _min = value[0] if value[0] != df[key].min() else float("-inf")
         _max = value[1] if value[1] != df[key].max() else float("inf")
@@ -92,11 +97,6 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
                 on_click=reset_filter_params,
                 args=(df, filter_name),
             )
-
-    if "yaml" in st.session_state and filter_name in st.session_state["yaml"]:
-        st.write(st.session_state["yaml"][filter_name])
-
-    st.write(st.session_state["filters"])
 
 
 # def filter_dataframe(df: pd.DataFrame, filter_name: str) -> pd.DataFrame:
