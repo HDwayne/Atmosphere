@@ -31,7 +31,7 @@ def home():
                 "Veuillez choisir un fichier", accept_multiple_files=False, type=["zip"]
             )
             yaml_file = st.file_uploader("Upload YAML File", type=["yaml", "yml"])
-            submitted = st.form_submit_button("submit")
+            st.form_submit_button("submit")
 
         if yaml_file is not None:
             data = load_yaml_file(yaml_file)
@@ -103,8 +103,11 @@ def home():
             if download_data:
                 st.success("Fichier télechargé !", icon="✅")
 
-            download_yaml = st.button(
-                "Telecharger les paramètres de configuration de l'outil"
+            download_yaml = st.download_button(
+                label="Telecharger les paramètres de configuration de l'outil",
+                data=generate_zip(st.session_state["yaml"], "yaml"),
+                file_name="config.zip",
+                mime="",
             )
             if download_yaml:
                 st.write("Fichier téléchargé.")
