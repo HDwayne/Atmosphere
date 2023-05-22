@@ -3,6 +3,7 @@ from io import StringIO, BytesIO
 import zipfile
 import pandas as pd
 import streamlit as st
+import yaml
 
 
 def print_widgets_separator(n=1, sidebar=False):
@@ -373,3 +374,8 @@ def generate_zip(df, df_name):
     with zipfile.ZipFile(buffer, "w") as zf:
         zf.writestr(f"{df_name}.txt", df.to_csv(index=False).encode("utf-8"))
     return buffer.getvalue()
+
+
+def load_yaml_file(uploaded_file):
+    data = yaml.safe_load(uploaded_file)
+    return data

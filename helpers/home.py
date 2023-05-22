@@ -9,6 +9,7 @@ from helpers.utils import (
     checkFileName,
     dfs_to_session_state,
     generate_zip,
+    load_yaml_file,
 )
 from helpers.TEI48 import *
 from helpers.TEI49 import *
@@ -25,19 +26,16 @@ def home():
 
         print_widgets_separator(sidebar=True)
 
-        file = st.file_uploader(
-            "Veuillez choisir un fichier", accept_multiple_files=False, type=["zip"]
-        )
+        with st.form("my-form", clear_on_submit=True):
+            file = st.file_uploader(
+                "Veuillez choisir un fichier", accept_multiple_files=False, type=["zip"]
+            )
+            yaml_file = st.file_uploader("Upload YAML File", type=["yaml", "yml"])
+            submitted = st.form_submit_button("submit")
 
-        file_filter = st.file_uploader(
-            "Veuillez choisir un fichier de filtres",
-            accept_multiple_files=False,
-            type=["yaml"],
-        )
-
-        if file_filter is not None:
-            st.session_state["file_filter"] = file_filter
-            print(st.session_state["file_filter"].getvalue().decode("utf-8"))
+        if yaml_file is not None:
+            data = load_yaml_file(yaml_file)
+            st.session_state["yaml"] = data
 
     # Main page
 
