@@ -1,8 +1,8 @@
 import streamlit as st
-from helpers.utils import *
+from helpers.utils import print_widgets_separator, show_Laero_logo, delete_session_state_rule, CheckZipFileName, read_zip_file, apply_time_dfs, getNumberFileImpoted, checkFileName
 from helpers.TEI48 import *
-from helpers.TEI49 import main_data , main_zero as main_zero_T49, main_fonct as main_fonct_T49, main_data_new as data_T49, main_fonct_new as fonct_T49
-from helpers.utils import convert_df, generate_zip
+from helpers.TEI49 import *
+from helpers.utils import generate_zip
 
 def main():
     st.set_page_config(
@@ -80,11 +80,11 @@ def main():
             with tei49:
                 DATA, FONCT, ZERO = st.tabs(["Données principales", "Fonctionnement", "Zéro"])
                 with DATA:
-                    data_T49()
+                    data_TEI49()
                 with FONCT:
-                    fonct_T49()
+                    fonct_TEI49()
                 with ZERO:
-                    main_zero_T49()
+                    zero_TEI49()
           
             download_data = st.download_button(
                 label="Télecharger les données", 

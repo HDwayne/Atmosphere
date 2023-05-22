@@ -4,6 +4,7 @@ import zipfile
 import pandas as pd
 import streamlit as st
 
+
 def print_widgets_separator(n=1, sidebar=False):
     """
     Prints customized separation line on sidebar
@@ -314,6 +315,7 @@ def apply_time_dfs(dfs: dict[str, pd.DataFrame], time_columns: list[str], time_f
     for_each_df(dfs, apply_time_df, time_columns=time_columns,
                 time_format=time_format)
     
+
 def export_meandata(df):
     with open('output.txt', 'w') as f:
         f.write(df.describe().to_csv(sep='\t'))

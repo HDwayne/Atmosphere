@@ -1,4 +1,3 @@
-import pandas as pd
 import streamlit as st
 
 def data_TEI48():
@@ -15,6 +14,7 @@ def data_TEI48():
     else:
         st.error('Pdm_TEI49_Data n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
 
+
 def zero_TEI48():
     if 'Pdm_TEI48_Zero' in st.session_state:
         TEI48_Zero = st.session_state.Pdm_TEI48_Zero
@@ -27,6 +27,7 @@ def zero_TEI48():
         st.write(TEI48_Zero.describe().loc[['min', 'max', 'mean', 'count']])
     else:
         st.error('Pdm_TEI49_Zero n\'est pas dans la session. Merci de charger une archive contenant les données nécessaires.')
+
 
 def fonct_TEI48():
     if 'Pdm_TEI48_Fonct' in st.session_state:
