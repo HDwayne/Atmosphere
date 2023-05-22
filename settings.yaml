@@ -1,0 +1,31 @@
+Pdm_TEI49_Fonct:
+  4.2f_flowA:
+    min: -inf
+    max:  inf
+  4.2f_flowB:
+    min: -inf
+    max:  inf
+  3.1f_bkg:
+    min: -inf
+    max:  inf
+  5.2f_coef:
+    min: -inf
+    max:  inf
+  5.1f_benchT:
+    min: -inf
+    max:  inf
+  5.1f_O3lampT:
+    min: -inf
+    max:  inf
+  5.1f_intT:
+    min: -inf
+    max: inf
+  5.1f_lampSetting:
+    min: -inf
+    max:  inf
+  6d_cellAInt:
+    min: -inf
+    max:  inf
+  6d_cellBInt:
+    min: -inf
+    max:  inf

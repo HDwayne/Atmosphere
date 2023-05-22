@@ -22,17 +22,17 @@ def print_widgets_separator(n=1, sidebar=False):
         else:
             st.markdown(html, unsafe_allow_html=True)
 
+
 @st.cache_data
 def show_Laero_logo(width, padding, margin):
     padding_top, padding_right, padding_bottom, padding_left = padding
     margin_top, margin_right, margin_bottom, margin_left = margin
-    
-    
-    with open('assets/Laero_bg.png', 'rb') as f:
+
+    with open("assets/Laero_bg.png", "rb") as f:
         data = f.read()
-    
+
     bin_str = base64.b64encode(data).decode()
-    html_code = f'''
+    html_code = f"""
                 <img src="data:image/png;base64,{bin_str}"
                 style="
                      margin: auto;
@@ -46,7 +46,7 @@ def show_Laero_logo(width, padding, margin):
                      padding-bottom: {padding_bottom}px;
                      padding-left: {padding_left}%;
                      "/>
-                '''
+                """
 
     return html_code
 
@@ -101,20 +101,20 @@ def CheckZipFileName(file_name: str) -> bool:
     """
     if not isinstance(file_name, str):
         raise TypeError("file_name must be a string")
-    
+
     info = file_name.replace(".zip", "").split("_")
     if len(info) != 3:
         return False
     if info[0] != "BrtPdm":
         return False
-    #if info[1] != "CHIMIE":
+    # if info[1] != "CHIMIE":
     #    return False
     if len(info[2]) != 8:
         return False
     return True
 
 
-def read_zip_file(zip_file_path: str) -> dict[str, pd.DataFrame]:
+def read_zip_file(zip_file_path: BytesIO) -> dict[str, pd.DataFrame]:
     """
     Read the contents of a zip file and return a dictionary of DataFrames.
 
@@ -138,8 +138,9 @@ def read_zip_file(zip_file_path: str) -> dict[str, pd.DataFrame]:
                 try:
                     header, data = file_contents.strip().split("\n", 1)
                     header_list = header.split(sep=",")
-                    df = pd.read_csv(StringIO(data), header=None,
-                                     names=header_list, sep=" ")
+                    df = pd.read_csv(
+                        StringIO(data), header=None, names=header_list, sep=" "
+                    )
                 except ValueError:
                     header_list = file_contents.strip().split(sep=",")
                     df = pd.DataFrame(columns=header_list)
@@ -149,25 +150,48 @@ def read_zip_file(zip_file_path: str) -> dict[str, pd.DataFrame]:
     return dfs
 
 
-def getDateFromZipFileName(file_name: str) -> str:
-    """
-    Get the date from a zip file name.
+def dfs_to_session_state(dfs: dict[str, pd.DataFrame]) -> list[str]:
+    if not "dfs" in st.session_state:
+        st.session_state["dfs"] = {}
 
-    Parameters
-    ----------
-    file_name : str
-        The file name.
+    added_file = []
+    apply_time_dfs(dfs, ["20t_Date"], "%d/%m/%Y,%H:%M:%S")
+    for key, value in dfs.items():
+        added_file.append(key)
+        if not key in st.session_state:
+            st.session_state["dfs"][key] = value
+        else:
+            st.session_state["dfs"][key] = st.session_state["dfs"][key]
+            # Iterate over the columns in the DataFrame
+        for col in value.columns:
+            # Check if the column name contains "\r"
+            if "\r" in col:
+                # Clean the column name by removing "\r"
+                new_col = col.replace("\r", "")
+                # Rename the column in the DataFrame
+                value.rename(columns={col: new_col}, inplace=True)
+    return added_file
 
-    Returns
-    -------
-    str
-        The date.
-    """
-    if not isinstance(file_name, str):
-        raise TypeError("file_name must be a string")
-    
-    info = file_name.replace(".zip", "").split("_")
-    return info[2]
+
+# def getDateFromZipFileName(file_name: str) -> str:
+#     """
+#     Get the date from a zip file name.
+
+#     Parameters
+#     ----------
+#     file_name : str
+#         The file name.
+
+#     Returns
+#     -------
+#     str
+#         The date.
+#     """
+#     if not isinstance(file_name, str):
+#         raise TypeError("file_name must be a string")
+
+#     info = file_name.replace(".zip", "").split("_")
+#     return info[2]
 
 
 def deleteDateFromFileNames(file_name: str) -> str:
@@ -186,17 +210,17 @@ def deleteDateFromFileNames(file_name: str) -> str:
     """
     if not isinstance(file_name, str):
         raise TypeError("file_name must be a string")
-    
+
     info = file_name.replace(".txt", "").split("_")
     return info[0] + "_" + info[1] + "_" + info[2]
 
 
-def delete_session_state() -> None:
-    """
-    Delete all session state variables
-    """
-    for key in st.session_state.keys():
-        del st.session_state[key]
+# def delete_session_state() -> None:
+#     """
+#     Delete all session state variables
+#     """
+#     for key in st.session_state.keys():
+#         del st.session_state[key]
 
 
 def delete_session_state_rule(rule: callable, **kwargs) -> None:
@@ -218,16 +242,29 @@ def delete_session_state_rule(rule: callable, **kwargs) -> None:
     """
     if not callable(rule):
         raise TypeError("rule must be a callable")
-    for key in list(st.session_state.keys()):
-        if rule(key, **kwargs):
-            del st.session_state[key]
+
+    if "dfs" in st.session_state:
+        for key in list(st.session_state["dfs"].keys()):
+            if rule(key, **kwargs):
+                del st.session_state["dfs"][key]
+
+    if "filters" in st.session_state:
+        for key in list(st.session_state["filters"].keys()):
+            if rule(key, **kwargs):
+                del st.session_state["filters"][key]
 
 
 def getNumberFileImpoted() -> int:
     """
     Get the number of files imported in the session state.
     """
-    return len([key for key in st.session_state.keys() if checkFileName(key, contain_date=False)])
+    return len(
+        [
+            key
+            for key in st.session_state["dfs"].keys()
+            if checkFileName(key, contain_date=False)
+        ]
+    )
 
 
 def for_each_df(dfs: dict[str, pd.DataFrame], func: callable, **kwargs) -> None:
@@ -272,7 +309,9 @@ def for_each_df(dfs: dict[str, pd.DataFrame], func: callable, **kwargs) -> None:
         func(df, **kwargs)
 
 
-def apply_time_df(df: pd.DataFrame, time_columns: list[str], time_format: str | None = None) -> None:
+def apply_time_df(
+    df: pd.DataFrame, time_columns: list[str], time_format: str | None = None
+) -> None:
     """
     Convert columns in a DataFrame to datetime64.
 
@@ -292,12 +331,15 @@ def apply_time_df(df: pd.DataFrame, time_columns: list[str], time_format: str | 
             try:
                 df[col] = pd.to_datetime(df[col], format=time_format)
             except ValueError as e:
-                print(
-                    f"Failed to convert column {col} to datetime64 on {df.Name}.")
+                print(f"Failed to convert column {col} to datetime64 on {df.Name}.")
                 print(e)
 
 
-def apply_time_dfs(dfs: dict[str, pd.DataFrame], time_columns: list[str], time_format: str | None = None) -> None:
+def apply_time_dfs(
+    dfs: dict[str, pd.DataFrame],
+    time_columns: list[str],
+    time_format: str | None = None,
+) -> None:
     """
     Convert columns in a dictionary of DataFrames to datetime64.
 
@@ -312,22 +354,22 @@ def apply_time_dfs(dfs: dict[str, pd.DataFrame], time_columns: list[str], time_f
     time_format : str | None
         The format of the time columns. If None, the default format is used.
     """
-    for_each_df(dfs, apply_time_df, time_columns=time_columns,
-                time_format=time_format)
-    
+    for_each_df(dfs, apply_time_df, time_columns=time_columns, time_format=time_format)
 
-def export_meandata(df):
-    with open('output.txt', 'w') as f:
-        f.write(df.describe().to_csv(sep='\t'))
-    return f
 
-@st.cache_data
-def convert_df(df):
-    return df.to_csv(index=False).encode('utf-8')
+# def export_meandata(df):
+#     with open('output.txt', 'w') as f:
+#         f.write(df.describe().to_csv(sep='\t'))
+#     return f
+
+# @st.cache_data
+# def convert_df(df):
+#     return df.to_csv(index=False).encode('utf-8')
+
 
 @st.cache_data
 def generate_zip(df, df_name):
     buffer = BytesIO()
-    with zipfile.ZipFile(buffer, 'w') as zf:
-        zf.writestr(f'{df_name}.txt', df.to_csv(index=False).encode('utf-8'))
+    with zipfile.ZipFile(buffer, "w") as zf:
+        zf.writestr(f"{df_name}.txt", df.to_csv(index=False).encode("utf-8"))
     return buffer.getvalue()

@@ -55,3 +55,22 @@ pip install ipykernel
 
 python -m ipykernel install --user --name=venv
 ```
+
+# homepage choice
+
+```
+# choice = st.radio(
+#     "📊 Sélectionnez la source de données",
+#     ("📁 Fichier local", "📥 Serveur distant")
+# )
+# if choice == "📁 Fichier local":
+#     file = st.file_uploader("Veuillez choisir un fichier",
+#                             accept_multiple_files=False,
+#                             type=['zip'])
+# elif choice == "📥 Serveur distant":
+#     site = st.text_input("Saisissez l'adresse du serveur 👇")
+```
+  
+```
+# if choice == "📁 Fichier local" and file is not None:
+```
