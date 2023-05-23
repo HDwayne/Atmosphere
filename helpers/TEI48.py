@@ -20,9 +20,9 @@ def data_TEI48():
         st.write(TEI48_Data.describe().loc[["min", "max", "mean", "count"]])
 
         st.download_button(
-            label=f"Télécharger les données moyénnées (pdm_coanalyzer_L2a_{st.session_state.date}_V01.txt)",
+            label=f"Télécharger les données moyénnées (pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt)",
             data=df_resample_mean(TEI48_Data, "5T", ["5d_CO"]).to_csv(sep=";"),
-            file_name=f"pdm_coanalyzer_L2a_{st.session_state.date}_V01.txt",
+            file_name=f"pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt",
             mime="text/plain",
         )
     else:

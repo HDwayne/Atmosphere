@@ -1,4 +1,5 @@
 import streamlit as st
+from helpers.utils import df_resample_mean
 
 
 def data_TEI49():
@@ -12,6 +13,13 @@ def data_TEI49():
         st.line_chart(TEI49_Data, x="20t_Date", y=y_data)
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])
+
+        st.download_button(
+            label=f"Télécharger les données moyénnées (pdm_o3analyzer_L2a_O3_{st.session_state.date}_V01.txt)",
+            data=df_resample_mean(TEI49_Data, "5T", ["4d_Pression"]).to_csv(sep=";"),
+            file_name=f"pdm_o3analyzer_L2a_O3_{st.session_state.date}_V01.txt",
+            mime="text/plain",
+        )
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."

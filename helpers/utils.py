@@ -368,7 +368,7 @@ def load_yaml_file(uploaded_file):
     return data
 
 
-def df_resample_mean(df, freq, drop_col):
+def df_resample_mean(df, freq, drop_col=[]):
     # Resample the data to 5-minute intervals
     df = df.resample(freq, on="20t_Date").mean()
 
