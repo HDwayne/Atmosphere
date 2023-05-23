@@ -78,15 +78,11 @@ def home():
                     zero_TEI48()
 
             with tei49:
-                DATA, FONCT, FILTER = st.tabs(
-                    ["Données principales", "Fonctionnement", "Filtres"]
-                )
+                DATA, FONCT = st.tabs(["Données principales", "Fonctionnement"])
                 with DATA:
                     data_TEI49()
                 with FONCT:
                     fonct_TEI49()
-                with FILTER:
-                    filter_TEI49()
 
             # commun footer
 

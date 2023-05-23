@@ -156,7 +156,7 @@ def dfs_to_session_state(dfs: dict[str, pd.DataFrame]) -> list[str]:
         st.session_state["dfs"] = {}
 
     added_file = []
-    apply_time_dfs(dfs, ["20t_Date"], "%d/%m/%Y,%H:%M:%S")
+    apply_time_dfs(dfs, ["20t_Date", "20t_DateZero"], "%d/%m/%Y,%H:%M:%S")
     for key, value in dfs.items():
         added_file.append(key)
         if not key in st.session_state:
@@ -248,11 +248,6 @@ def delete_session_state_rule(rule: callable, **kwargs) -> None:
         for key in list(st.session_state["dfs"].keys()):
             if rule(key, **kwargs):
                 del st.session_state["dfs"][key]
-
-    if "filters" in st.session_state:
-        for key in list(st.session_state["filters"].keys()):
-            if rule(key, **kwargs):
-                del st.session_state["filters"][key]
 
 
 def getNumberFileImpoted() -> int:
