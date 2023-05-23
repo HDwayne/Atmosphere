@@ -10,6 +10,7 @@ from helpers.utils import (
     dfs_to_session_state,
     generate_zip,
     load_yaml_file,
+    # save_yaml_file,
 )
 from helpers.TEI48 import *
 from helpers.TEI49 import *
@@ -103,14 +104,18 @@ def home():
             if download_data:
                 st.success("Fichier télechargé !", icon="✅")
 
-            download_yaml = st.download_button(
-                label="Telecharger les paramètres de configuration de l'outil",
-                data=generate_zip(st.session_state["yaml"], "yaml"),
-                file_name="config.zip",
-                mime="",
-            )
-            if download_yaml:
-                st.write("Fichier téléchargé.")
+            # download_yaml = st.download_button(
+            #     label="Telecharger les paramètres de configuration de l'outil",
+            #     data=save_yaml_file(),
+            #     file_name="config.yaml",
+            #     mime="text/yaml",
+            # )
+            # if download_yaml:
+            #     st.success("Fichier télechargé !", icon="✅")
+
+            button = st.button("Supprimer les données")
+            if button:
+                print(st.session_state["filters"])
 
             with st.expander("Cliquez ici pour consulter les données brutes 👋"):
                 number_file = getNumberFileImpoted()

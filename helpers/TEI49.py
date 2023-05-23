@@ -43,3 +43,11 @@ def filter_TEI49():
     st.title("Filtres sur les données de fonctionnement")
 
     filters_widgets(st.session_state["dfs"]["Pdm_TEI49_Fonct"], "Pdm_TEI49_Fonct")
+
+    with st.expander("filtres"):
+        if "filters" in st.session_state:
+            st.write(st.session_state["filters"])
+
+    with st.expander("yaml"):
+        if "yaml" in st.session_state:
+            st.write(st.session_state["yaml"])

@@ -379,3 +379,10 @@ def generate_zip(df, df_name):
 def load_yaml_file(uploaded_file):
     data = yaml.safe_load(uploaded_file)
     return data
+
+
+# def save_yaml_file():
+#     stream = BytesIO()
+#     with stream:
+#         yaml.dump(st.session_state["filters"], stream)
+#     return stream.getvalue()

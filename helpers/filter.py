@@ -1,22 +1,20 @@
 import pandas as pd
 import streamlit as st
 import numpy as np
-from pandas.api.types import is_numeric_dtype, is_datetime64_any_dtype
 
 
 def import_filter_params(filter_name) -> None:
-    if "yaml" in st.session_state and filter_name in st.session_state["yaml"]:
-        # yaml to filters
-        filter_params = st.session_state["yaml"][filter_name]
-        st.session_state["filters"][filter_name] = filter_params
+    # yaml to filters
+    filter_params = st.session_state["yaml"][filter_name]
+    st.session_state["filters"][filter_name] = filter_params
 
-        # yaml to widgets form
-        for key, value in filter_params.items():
-            if f"filter_form.{filter_name}.{key}" in st.session_state:
-                st.session_state[f"filter_form.{filter_name}.{key}"] = (
-                    float(value["min"]),
-                    float(value["max"]),
-                )
+    # yaml to widgets form
+    for key, value in filter_params.items():
+        if f"filter_form.{filter_name}.{key}" in st.session_state:
+            st.session_state[f"filter_form.{filter_name}.{key}"] = (
+                float(value["min"]),
+                float(value["max"]),
+            )
 
 
 def reset_filter_params(df, filter_name) -> None:
@@ -27,19 +25,18 @@ def reset_filter_params(df, filter_name) -> None:
     # restore default widgets form
     for y in df.select_dtypes(include=[np.number]):
         _min, _max = float(df[y].min()), float(df[y].max())
-        if pd.notnull(_min) and pd.notnull(_max) and _min != _max:
+        if _min != _max:
             st.session_state[f"filter_form.{filter_name}.{y}"] = (_min, _max)
 
 
 def save_filter_params(df, filter_name, widget_dict):
-    if filter_name not in st.session_state["filters"]:
-        st.session_state["filters"][filter_name] = {}
-
     # widgets form to filters
     for key, value in widget_dict.items():
-        _min = value[0] if value[0] != df[key].min() else float("-inf")
-        _max = value[1] if value[1] != df[key].max() else float("inf")
-        st.session_state["filters"][filter_name][key] = {"min": _min, "max": _max}
+        st.session_state["filters"][filter_name][key] = {
+            "min": value[0] if value[0] != df[key].min() else float("-inf"),
+            "max": value[1] if value[1] != df[key].max() else float("inf"),
+        }
+    print(st.session_state["filters"])
 
 
 def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
@@ -57,9 +54,9 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
         for y in df.select_dtypes(include=[np.number]):
             _min, _max = float(df[y].min()), float(df[y].max())
 
-            if pd.notnull(_min) and pd.notnull(_max) and _min != _max:
+            if _min != _max:
                 widget_dict[y] = st.slider(
-                    label=y,
+                    label=str(y),
                     min_value=_min,
                     max_value=_max,
                     value=(_min, _max),
@@ -67,7 +64,7 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
                 )
             else:
                 unavailable_columns.append(y)
-                widget_dict[y] = (float("-inf"), float("inf"))
+                # widget_dict[y] = (float("-inf"), float("inf"))
 
         if unavailable_columns:
             st.write(
@@ -79,7 +76,8 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
         with BTN1:
             st.form_submit_button(
                 "Charger depuis YAML",
-                disabled=not "yaml" in st.session_state,
+                disabled=not "yaml" in st.session_state
+                or not filter_name in st.session_state["yaml"],
                 on_click=import_filter_params,
                 args=(filter_name,),
             )
@@ -88,14 +86,21 @@ def filters_widgets(df: pd.DataFrame, filter_name: str) -> None:
             st.form_submit_button(
                 "Sauvegarder les filtres",
                 on_click=save_filter_params,
-                args=(df, filter_name, widget_dict),
+                args=(
+                    df,
+                    filter_name,
+                    widget_dict,
+                ),
             )
 
         with BTN3:
             st.form_submit_button(
                 "Réinitialiser les filtres",
                 on_click=reset_filter_params,
-                args=(df, filter_name),
+                args=(
+                    df,
+                    filter_name,
+                ),
             )
 
 
