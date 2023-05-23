@@ -8,7 +8,6 @@ from helpers.utils import (
     getNumberFileImpoted,
     checkFileName,
     dfs_to_session_state,
-    generate_zip,
     load_yaml_file,
     getDateFromZipFileName,
 )
@@ -91,17 +90,6 @@ def home():
             # commun footer
 
             print_widgets_separator()
-
-            download_data = st.download_button(
-                label="Télecharger les données",
-                data=generate_zip(
-                    st.session_state["dfs"]["Pdm_TEI48_Data"], "Pdm_TEI48_Data"
-                ),
-                file_name="data.zip",
-                mime="application/zip",
-            )
-            if download_data:
-                st.success("Fichier télechargé !", icon="✅")
 
             # download_yaml = st.download_button(
             #     label="Telecharger les paramètres de configuration de l'outil",

@@ -363,14 +363,6 @@ def apply_time_dfs(
 #     return df.to_csv(index=False).encode('utf-8')
 
 
-@st.cache_data
-def generate_zip(df, df_name):
-    buffer = BytesIO()
-    with zipfile.ZipFile(buffer, "w") as zf:
-        zf.writestr(f"{df_name}.txt", df.to_csv(index=False).encode("utf-8"))
-    return buffer.getvalue()
-
-
 def load_yaml_file(uploaded_file):
     data = yaml.safe_load(uploaded_file)
     return data
