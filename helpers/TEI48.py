@@ -1,15 +1,18 @@
 import streamlit as st
-
+import altair as alt
 
 def data_TEI48():
     if "Pdm_TEI48_Data" in st.session_state["dfs"]:
         TEI48_Data = st.session_state["dfs"]["Pdm_TEI48_Data"]
+        st.write(TEI48_Data)
 
         y_data = st.selectbox(
-            "Veuillez choisir les données pour l'axe x.",
+            "Veuillez choisir les données pour l'axe y.",
             (col for col in TEI48_Data.columns if col != "valid" and col != "20t_Date"),
         )
-        st.line_chart(TEI48_Data, x="20t_Date", y=y_data)
+        # st.line_chart(TEI48_Data, x="20t_Date", y=y_data)
+        c = alt.Chart(TEI48_Data).mark_line().encode(x ='20t_Date' , y=y_data)
+        st.altair_chart(c, use_container_width=True)
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Data.describe().loc[["min", "max", "mean", "count"]])
     else:
@@ -54,7 +57,9 @@ def fonct_TEI48():
                 if col != "valid" and col != "20t_Date"
             ),
         )
-        st.line_chart(TEI48_Fonct, x="20t_Date", y=y_data)
+        c = alt.Chart(TEI48_Fonct).mark_line().encode(x ='20t_Date' , y=y_data)
+        st.altair_chart(c, use_container_width=True)
+        # st.line_chart(TEI48_Fonct, x="20t_Date", y=y_data)
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Fonct.describe().loc[["min", "max", "mean", "count"]])
     else:
