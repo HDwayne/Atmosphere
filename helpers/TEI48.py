@@ -1,5 +1,8 @@
 import streamlit as st
 import altair as alt
+import pandas as pd
+from helpers.utils import df_resample_mean
+
 
 def data_TEI48():
     if "Pdm_TEI48_Data" in st.session_state["dfs"]:
@@ -11,10 +14,17 @@ def data_TEI48():
             (col for col in TEI48_Data.columns if col != "valid" and col != "20t_Date"),
         )
         # st.line_chart(TEI48_Data, x="20t_Date", y=y_data)
-        c = alt.Chart(TEI48_Data).mark_line().encode(x ='20t_Date' , y=y_data)
+        c = alt.Chart(TEI48_Data).mark_line().encode(x="20t_Date", y=y_data)
         st.altair_chart(c, use_container_width=True)
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Data.describe().loc[["min", "max", "mean", "count"]])
+
+        st.download_button(
+            label=f"Télécharger les données moyénnées (pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt)",
+            data=df_resample_mean(TEI48_Data, "5T", ["5d_CO"]).to_csv(sep=";"),
+            file_name=f"pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt",
+            mime="text/plain",
+        )
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
@@ -57,7 +67,7 @@ def fonct_TEI48():
                 if col != "valid" and col != "20t_Date"
             ),
         )
-        c = alt.Chart(TEI48_Fonct).mark_line().encode(x ='20t_Date' , y=y_data)
+        c = alt.Chart(TEI48_Fonct).mark_line().encode(x="20t_Date", y=y_data)
         st.altair_chart(c, use_container_width=True)
         # st.line_chart(TEI48_Fonct, x="20t_Date", y=y_data)
         st.write("Statistiques sur les données brutes")

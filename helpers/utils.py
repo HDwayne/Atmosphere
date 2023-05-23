@@ -163,7 +163,7 @@ def dfs_to_session_state(dfs: dict[str, pd.DataFrame]) -> list[str]:
             st.session_state["dfs"][key] = value
         else:
             st.session_state["dfs"][key] = st.session_state["dfs"][key]
-            # Iterate over the columns in the DataFrame
+        # Iterate over the columns in the DataFrame
         for col in value.columns:
             # Check if the column name contains "\r"
             if "\r" in col:
@@ -174,25 +174,25 @@ def dfs_to_session_state(dfs: dict[str, pd.DataFrame]) -> list[str]:
     return added_file
 
 
-# def getDateFromZipFileName(file_name: str) -> str:
-#     """
-#     Get the date from a zip file name.
+def getDateFromZipFileName(file_name: str) -> str:
+    """
+    Get the date from a zip file name.
 
-#     Parameters
-#     ----------
-#     file_name : str
-#         The file name.
+    Parameters
+    ----------
+    file_name : str
+        The file name.
 
-#     Returns
-#     -------
-#     str
-#         The date.
-#     """
-#     if not isinstance(file_name, str):
-#         raise TypeError("file_name must be a string")
+    Returns
+    -------
+    str
+        The date.
+    """
+    if not isinstance(file_name, str):
+        raise TypeError("file_name must be a string")
 
-#     info = file_name.replace(".zip", "").split("_")
-#     return info[2]
+    info = file_name.replace(".zip", "").split("_")
+    return info[2]
 
 
 def deleteDateFromFileNames(file_name: str) -> str:
@@ -363,14 +363,40 @@ def apply_time_dfs(
 #     return df.to_csv(index=False).encode('utf-8')
 
 
-@st.cache_data
-def generate_zip(df, df_name):
-    buffer = BytesIO()
-    with zipfile.ZipFile(buffer, "w") as zf:
-        zf.writestr(f"{df_name}.txt", df.to_csv(index=False).encode("utf-8"))
-    return buffer.getvalue()
-
-
 def load_yaml_file(uploaded_file):
     data = yaml.safe_load(uploaded_file)
     return data
+
+
+def df_resample_mean(df, freq, drop_col=[]):
+    # Resample the data to 5-minute intervals
+    df = df.resample(freq, on="20t_Date").mean()
+
+    # Extraire la date uniquement
+    df["date"] = df.index.date
+
+    # Trouver la date avec le plus grand nombre de lignes
+    date = df["date"].value_counts().idxmax()
+
+    # Filtrer les données pour ne conserver que celles de la date choisie
+    df = df[df["date"] == date]
+
+    # Filtrer les données pour ne conserver que celles entre 00:00:00 et 23:55:00
+    start_time = pd.to_datetime("00:00:00").time()
+    end_time = pd.to_datetime("23:55:00").time()
+    df = df[(df.index.time >= start_time) & (df.index.time <= end_time)]
+
+    # Supprimer les colonnes inutiles
+    if "date" in df.columns:
+        df = df.drop(columns=["date"])
+    for col in drop_col:
+        if col in df.columns:
+            df = df.drop(columns=[col])
+
+    # Remplacer les valeurs NaN par 0
+    df = df.fillna(-9999)
+
+    # passer les colonnes en int
+    df = df.astype(int)
+
+    return df
