@@ -1,5 +1,4 @@
 import streamlit as st
-from helpers.filter import *
 
 
 def data_TEI49():
@@ -37,9 +36,3 @@ def fonct_TEI49():
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
         )
-
-
-def filter_TEI49():
-    st.title("Filtres sur les données de fonctionnement")
-
-    filters_widgets(st.session_state["dfs"]["Pdm_TEI49_Fonct"], "Pdm_TEI49_Fonct")

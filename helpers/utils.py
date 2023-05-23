@@ -249,11 +249,6 @@ def delete_session_state_rule(rule: callable, **kwargs) -> None:
             if rule(key, **kwargs):
                 del st.session_state["dfs"][key]
 
-    if "filters" in st.session_state:
-        for key in list(st.session_state["filters"].keys()):
-            if rule(key, **kwargs):
-                del st.session_state["filters"][key]
-
 
 def getNumberFileImpoted() -> int:
     """
