@@ -93,6 +93,7 @@ def fonct_TEI48():
         
         st.pyplot(fig)
         """
+        
 def invalid_datapoints_minmax(x, y, min, max):
     # Define the interval and the color for points outside the interval
     interval_min = min

@@ -15,12 +15,11 @@ def data_TEI49():
         st.plotly_chart(fig, use_container_width=True)
 
         st.write("Statistiques sur les données brutes")
-        st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])
+        st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])        
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
         )
-
 
 def fonct_TEI49():
     if "Pdm_TEI49_Fonct" in st.session_state["dfs"]:
