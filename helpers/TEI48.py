@@ -4,7 +4,6 @@ import plotly.graph_objects as go
 import pandas as pd
 from helpers.utils import df_resample_mean
 
-
 def data_TEI48():
     if "Pdm_TEI48_Data" in st.session_state["dfs"]:
         TEI48_Data = st.session_state["dfs"]["Pdm_TEI48_Data"]

@@ -108,13 +108,20 @@ def data_TEI49():
         )
 
         fig = px.line(TEI49_Data, x="20t_Date", y=y_data)
-
-        if st.button('filtre ebarbeur'):
-            TEI49_Data = filtre_ebarbeur(TEI49_Data, y_data, -999, 5, 10, 1)
-            st.line_chart(TEI49_Data, x="20t_Date", y=y_data)
-            
         st.plotly_chart(fig, use_container_width=True)
 
+        TEI49_Data_Filtre = TEI49_Data.copy()
+        if st.button('filtre ebarbeur'):
+            TEI49_Data_Filtre = filtre_ebarbeur(TEI49_Data, str(y_data), -999, 5, 10, 1)
+            #fig = px.line(TEI49_Data, x="20t_Date", y=y_data)
+            #fig.add_trace(go.Scatter(x=TEI49_Data_Filtre["20t_Date"], y=TEI49_Data_Filtre[y_data], mode='lines', name='Filtré', line=dict(color='red')))
+            fig = px.line(TEI49_Data_Filtre, x="20t_Date", y=y_data, color_discrete_sequence=['teal'], labels="Données filtrées ("+str(y_data)+")")
+            fig.update_traces(showlegend=True)
+            # Update the legend attributes
+            # fig.update_layout(legend=dict(title='Données filtrées')
+            fig.add_trace(go.Scatter(x=TEI49_Data["20t_Date"], y=TEI49_Data[y_data], mode='lines', name='Données originales', line=dict(color='blue')))
+            st.plotly_chart(fig, use_container_width=True)
+            
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])                
 
