@@ -53,7 +53,7 @@ def fonct_TEI48():
         TEI48_Fonct = st.session_state["dfs"]["Pdm_TEI48_Fonct"]
 
         y_data = st.selectbox(
-            "Veuillez choisir les données pour l'axe x.",
+            "Veuillez choisir les données pour l'axe y.",
             (
                 col
                 for col in TEI48_Fonct.columns
@@ -95,7 +95,7 @@ def zero_TEI48():
         TEI48_Zero = st.session_state["dfs"]["Pdm_TEI48_Zero"]
 
         y_data = st.selectbox(
-            "Veuillez choisir les données pour l'axe x.",
+            "Veuillez choisir les données pour l'axe y.",
             (
                 col
                 for col in TEI48_Zero.columns

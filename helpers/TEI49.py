@@ -16,7 +16,7 @@ def data_TEI49():
         TEI49_Data = st.session_state["dfs"]["Pdm_TEI49_Data"]
         
         y_data = st.selectbox(
-            "Veuillez choisir les données pour l'axe x.",
+            "Veuillez choisir les données pour l'axe y.",
             (col for col in TEI49_Data.columns if col != "valid" and col != "20t_Date"),
         )
 
@@ -59,7 +59,7 @@ def fonct_TEI49():
     if "Pdm_TEI49_Fonct" in st.session_state["dfs"]:
         TEI49_Fonct = st.session_state["dfs"]["Pdm_TEI49_Fonct"]
         y_data = st.selectbox(
-            "Veuillez choisir les données pour l'axe x.",
+            "Veuillez choisir les données pour l'axe y.",
             (
                 col
                 for col in TEI49_Fonct.columns
