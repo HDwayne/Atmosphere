@@ -6,6 +6,5 @@ if __name__ == '__main__':
         page_title="BE",
         layout="wide",
         initial_sidebar_state="auto"
-    )
-        
+    ) 
     home()

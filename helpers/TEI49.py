@@ -3,6 +3,11 @@ from helpers.utils import df_resample_mean
 import pandas as pd
 import datetime
 
+#variables globales 
+iter = 0
+smooth_df = pd.DataFrame()
+   
+
 def filtre_ebarbeur(df : pd.DataFrame, type_donnees : str, val_manq : int, track_bar_coupure : int, track_bar_nbre_pts : int, track_bar_ebarbage : int) -> pd.DataFrame:
     """
     Applies a trimming filter to a dataframe. 
@@ -11,7 +16,7 @@ def filtre_ebarbeur(df : pd.DataFrame, type_donnees : str, val_manq : int, track
     Parameters
     ----------
     df : pd.DataFrame
-        The dataframe to filter.
+        The dataframe to filter
     type_donnees : 
         Name of the column to filter 
     val_manq : int
@@ -19,7 +24,7 @@ def filtre_ebarbeur(df : pd.DataFrame, type_donnees : str, val_manq : int, track
     track_bar_coupure : int
         The chosen time interval for the sliding window 
     track_bar_nbre_pts : int
-        A number of points (idk?)
+        The minimum number of points required within a sliding window to trigger the filtering process.
     track_bar_ebarbage : int
         The number of points that need to get fixed
 
@@ -35,45 +40,33 @@ def filtre_ebarbeur(df : pd.DataFrame, type_donnees : str, val_manq : int, track
     is_calcul = False
     coupure = datetime.datetime.combine(datetime.date.today(), datetime.time.min) + datetime.timedelta(minutes=track_bar_coupure)
     coupure = coupure - datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-   
-
-    # tableau pour stocker des données intermédiaires
+    
     stat = []
-
     date = filtered_df.iloc[0]['20t_Date']
-
-    #timestamp = datetime.datetime.timestamp(time_part)
-
-    # Convert Timestamp to float representation
     date_float = date.timestamp()
 
-    for jj in range(1, nb_data-1):
+    for jj in range(1, nb_data):
         if filtered_df.iloc[jj][type_donnees] > val_manq:
-            # ici on filtre pour ne pas prendre en compte les valeurs manquantes style -999.
-            # Vous filtrez pour prendre juste des valeurs positives
             if filtered_df.iloc[jj]['20t_Date'] - pd.Timestamp.fromtimestamp(date_float) < coupure:
-                # On stocke les données sur un intervalle de temps
-                stat.append(filtered_df.iloc[jj][type_donnees]) # data[jj].valTmp = concentration en O3 ou en CO
+                stat.append(filtered_df.iloc[jj][type_donnees])
             else:
                 is_calcul = True
 
             date = filtered_df.iloc[jj]['20t_Date']
 
-        # TrackBarNbrePts->Position : critère de filtrage ou nom selon un nombre de point
-        if jj - i_deb >= track_bar_nbre_pts:
+        if jj == nb_data - 1:
             is_calcul = True
 
-        # Recalcul
         if is_calcul:
             stat.sort()
-            nb_pts = min(track_bar_ebarbage, len(stat)-1)
+            nb_pts = min(track_bar_nbre_pts, len(stat) - 1)
 
             if nb_pts > (len(stat) - 1) // 2:
                 nb_pts = (len(stat) - 1) // 2
 
             if nb_pts >= 0:
                 filtre_min = stat[nb_pts - 1]
-                filtre_max = stat[len(stat)- nb_pts - 1]
+                filtre_max = stat[-nb_pts]
 
             else:
                 filtre_min = -1000000.0
@@ -82,15 +75,14 @@ def filtre_ebarbeur(df : pd.DataFrame, type_donnees : str, val_manq : int, track
             for ii in range(i_deb, jj):
                 if ii < len(filtered_df) and filtered_df.iloc[ii][type_donnees] > val_manq:
                     if filtered_df.iloc[ii][type_donnees] < filtre_min:
-                        #ajouter une colonne au dataframe pour stocker les valeurs à filtrer ou recopier le df avant d'appliquer le filtre
-                        filtered_df.at[ii,type_donnees] = filtre_min 
+                        filtered_df.at[ii, type_donnees] = filtre_min 
                     elif filtered_df.iloc[ii][type_donnees] > filtre_max:
-                        filtered_df.at[ii,type_donnees]  = filtre_max
+                        filtered_df.at[ii, type_donnees] = filtre_max
                     else:
-                        filtered_df.at[ii,type_donnees] = df.iloc[ii][type_donnees]
-                else :
-                     if ii < len(filtered_df):
-                        filtered_df.at[ii,type_donnees]  = df.iloc[ii][type_donnees]
+                        filtered_df.at[ii, type_donnees] = df.iloc[ii][type_donnees]
+                else:
+                    if ii < len(filtered_df):
+                        filtered_df.at[ii, type_donnees] = df.iloc[ii][type_donnees]
 
             i_deb = jj
             is_calcul = False
@@ -100,16 +92,24 @@ def filtre_ebarbeur(df : pd.DataFrame, type_donnees : str, val_manq : int, track
 def data_TEI49():
     if "Pdm_TEI49_Data" in st.session_state["dfs"]:
         TEI49_Data = st.session_state["dfs"]["Pdm_TEI49_Data"]
-
+        
         y_data = st.selectbox(
             "Veuillez choisir les données pour l'axe x.",
             (col for col in TEI49_Data.columns if col != "valid" and col != "20t_Date"),
         )
         st.line_chart(TEI49_Data, x="20t_Date", y=y_data)
 
+        #bouton filtre ebarbeur
+        global iter #nb d'itérations
         if st.button('filtre ebarbeur'):
-            TEI49_Data = filtre_ebarbeur(TEI49_Data, y_data, -999, 5, 10, 1)
-            st.line_chart(TEI49_Data, x="20t_Date", y=y_data)
+            global smooth_df 
+            if iter == 0 :
+                smooth_df= filtre_ebarbeur(TEI49_Data, y_data, -999, 5, 6, 4000)
+            else :
+                smooth_df = filtre_ebarbeur(smooth_df, y_data, -999, 5, 6, 4000)
+            iter += 1
+            print(iter)
+            st.line_chart(smooth_df, x="20t_Date", y=y_data)
             
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])        
