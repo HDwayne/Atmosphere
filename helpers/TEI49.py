@@ -5,9 +5,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 from helpers.filter import filtre_ebarbeur, invalid_datapoints_min
 
-# variables globales
-iter = 0
-smooth_df = pd.DataFrame()
+
+def apply_filter(df_smooth):
+    st.session_state["dfs"]["Pdm_TEI49_Data"] = df_smooth
 
 
 def data_TEI49():
@@ -27,12 +27,8 @@ def data_TEI49():
         global smooth_df  # df filtrée
 
         if st.button("filtre ebarbeur", key="49"):
-            if iter == 0:
-                smooth_df = filtre_ebarbeur(TEI49_Data, str(y_data), -999, 5, 6, 8000)
-            else:
-                smooth_df = filtre_ebarbeur(smooth_df, str(y_data), -999, 5, 6, 8000)
+            smooth_df = filtre_ebarbeur(TEI49_Data, str(y_data), -999, 5, 6, 8000)
 
-            iter += 1
             fig = px.line(
                 smooth_df,
                 x="20t_Date",
@@ -52,6 +48,9 @@ def data_TEI49():
                 )
             )
             st.plotly_chart(fig, use_container_width=True)
+            st.button(
+                "save", key="49applyebarbeur", on_click=apply_filter, args=(smooth_df,)
+            )
 
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])

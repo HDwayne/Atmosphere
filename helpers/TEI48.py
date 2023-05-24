@@ -1,13 +1,8 @@
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 from helpers.utils import df_resample_mean, export_yaml_file
 from helpers.filter import *
-
-# variables globales
-iter = 0
-smooth_df = pd.DataFrame()
 
 
 def slide_change_zero(y_data):
@@ -26,6 +21,10 @@ def slide_change_fonct_min(y_data):
     st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"] = value
 
 
+def apply_filter(df_smooth):
+    st.session_state["dfs"]["Pdm_TEI48_Data"] = df_smooth
+
+
 def data_TEI48():
     if "Pdm_TEI48_Data" in st.session_state["dfs"]:
         TEI48_Data = st.session_state["dfs"]["Pdm_TEI48_Data"]
@@ -40,11 +39,7 @@ def data_TEI48():
         global iter  # nb d'itérations
         global smooth_df  # df filtrée
         if st.button("filtre ebarbeur", key="48"):
-            if iter == 0:
-                smooth_df = filtre_ebarbeur(TEI48_Data, str(y_data), -999, 5, 6, 8000)
-            else:
-                smooth_df = filtre_ebarbeur(smooth_df, str(y_data), -999, 5, 6, 8000)
-            iter += 1
+            smooth_df = filtre_ebarbeur(TEI48_Data, str(y_data), -999, 5, 6, 8000)
             fig = px.line(
                 smooth_df,
                 x="20t_Date",
@@ -64,6 +59,9 @@ def data_TEI48():
                 )
             )
             st.plotly_chart(fig, use_container_width=True)
+            st.button(
+                "save", key="48applyebarbeur", on_click=apply_filter, args=(smooth_df,)
+            )
 
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Data.describe().loc[["min", "max", "mean", "count"]])
