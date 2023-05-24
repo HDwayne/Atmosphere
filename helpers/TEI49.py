@@ -268,6 +268,9 @@ def invalid_datapoints_min(x, y, min):
     # Create the line chart
     fig = go.Figure(data=go.Scatter(x=x, y=y, mode='lines+markers', marker=dict(color=colors)))
 
+    fig.add_trace(go.Scatter(x=[None], y=[None], mode='markers', marker=dict(color='blue'), name='Valide'))
+    fig.add_trace(go.Scatter(x=[None], y=[None], mode='markers', marker=dict(color='red'), name='Non-valide'))
+
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
@@ -288,6 +291,9 @@ def invalid_datapoints_max(x, y, max):
 
     # Create the line chart
     fig = go.Figure(data=go.Scatter(x=x, y=y, mode='lines+markers', marker=dict(color=colors)))
+
+    fig.add_trace(go.Scatter(x=[None], y=[None], mode='markers', marker=dict(color='blue'), name='Valide'))
+    fig.add_trace(go.Scatter(x=[None], y=[None], mode='markers', marker=dict(color='red'), name='Non-valide'))
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
