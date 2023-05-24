@@ -3,6 +3,11 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 from helpers.utils import df_resample_mean
+from helpers.filter import filtre_ebarbeur
+
+#variables globales
+iter = 0
+smooth_df = pd.DataFrame()
 
 def data_TEI48():
     if "Pdm_TEI48_Data" in st.session_state["dfs"]:
@@ -14,6 +19,20 @@ def data_TEI48():
         )
         fig = px.line(TEI48_Data, x="20t_Date", y=y_data)
         st.plotly_chart(fig, use_container_width=True)
+
+        global iter #nb d'itérations
+        global smooth_df #df filtrée
+        if st.button('filtre ebarbeur', key = "48"):
+            if iter == 0 :
+                smooth_df = filtre_ebarbeur(TEI48_Data, str(y_data), -999, 5, 6, 8000)
+            else :
+                smooth_df = filtre_ebarbeur(smooth_df, str(y_data), -999, 5, 6, 8000)
+            iter += 1
+            fig = px.line(smooth_df, x="20t_Date", y=y_data, color_discrete_sequence=['teal'], labels="Données filtrées ("+str(y_data)+")")
+            fig.update_traces(showlegend=True)
+
+            fig.add_trace(go.Scatter(x=TEI48_Data["20t_Date"], y=TEI48_Data[y_data], mode='lines', name='Données originales', line=dict(color='pink')))
+            st.plotly_chart(fig, use_container_width=True)
 
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Data.describe().loc[["min", "max", "mean", "count"]])
