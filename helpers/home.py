@@ -8,8 +8,8 @@ from helpers.utils import (
     getNumberFileImpoted,
     checkFileName,
     dfs_to_session_state,
-    generate_zip,
     load_yaml_file,
+    getDateFromZipFileName,
 )
 from helpers.TEI48 import *
 from helpers.TEI49 import *
@@ -58,6 +58,9 @@ def home():
             # add file to session state
             added_file = dfs_to_session_state(read_zip_file(file))
 
+            # save date in session state
+            st.session_state["date"] = getDateFromZipFileName(file.name)
+
             st.sidebar.success(
                 f'Les fichiers suivants ont été ajoutés : {", ".join(added_file)}'
             )
@@ -88,25 +91,14 @@ def home():
 
             print_widgets_separator()
 
-            download_data = st.download_button(
-                label="Télecharger les données",
-                data=generate_zip(
-                    st.session_state["dfs"]["Pdm_TEI48_Data"], "Pdm_TEI48_Data"
-                ),
-                file_name="data.zip",
-                mime="application/zip",
-            )
-            if download_data:
-                st.success("Fichier télechargé !", icon="✅")
-
-            download_yaml = st.download_button(
-                label="Telecharger les paramètres de configuration de l'outil",
-                data=generate_zip(st.session_state["yaml"], "yaml"),
-                file_name="config.zip",
-                mime="",
-            )
-            if download_yaml:
-                st.write("Fichier téléchargé.")
+            # download_yaml = st.download_button(
+            #     label="Telecharger les paramètres de configuration de l'outil",
+            #     data=generate_zip(st.session_state["yaml"], "yaml"),
+            #     file_name="config.zip",
+            #     mime="",
+            # )
+            # if download_yaml:
+            #     st.write("Fichier téléchargé.")
 
             with st.expander("Cliquez ici pour consulter les données brutes 👋"):
                 number_file = getNumberFileImpoted()
