@@ -2,12 +2,28 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-from helpers.utils import df_resample_mean
+from helpers.utils import df_resample_mean, export_yaml_file
 from helpers.filter import *
 
 # variables globales
 iter = 0
 smooth_df = pd.DataFrame()
+
+
+def slide_change_zero(y_data):
+    value = st.session_state[f"slider_{y_data}"]
+    st.session_state["yaml"]["Pdm_TEI48_Zero"][y_data]["max"] = value
+
+
+def slide_change_fonct_minmax(y_data):
+    value = st.session_state[f"slider_{y_data}"]
+    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"] = value[0]
+    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["max"] = value[1]
+
+
+def slide_change_fonct_min(y_data):
+    value = st.session_state[f"slider_{y_data}"]
+    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"] = value
 
 
 def data_TEI48():
@@ -82,15 +98,15 @@ def fonct_TEI48():
                 "Choisissez une intervalle costumisée 👇",
                 1.1,
                 1.2,
-                (1.1, 1.2),
+                (
+                    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"],
+                    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["max"],
+                ),
                 step=0.0001,
+                on_change=slide_change_fonct_minmax,
+                args=(y_data,),
+                key=f"slider_{y_data}",
             )
-            # st.write(
-            #     "Valeur minimum choisie = ",
-            #     values[0],
-            #     "Valeur maximum choisie = ",
-            #     values[1],
-            # )
             invalid_datapoints_minmax(
                 TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], values[0], values[1]
             )
@@ -100,33 +116,60 @@ def fonct_TEI48():
                 "Choisissez une intervalle costumisée 👇",
                 190000,
                 210000,
-                (190000, 210000),
+                (
+                    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"],
+                    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["max"],
+                ),
+                step=100,
+                on_change=slide_change_fonct_minmax,
+                args=(y_data,),
+                key=f"slider_{y_data}",
             )
             invalid_datapoints_minmax(
                 TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], values[0], values[1]
             )
-
-        elif y_data == "5.2f_flow":
-            value = st.slider("Choisissez une intervalle costumisée 👇", 1, 10, 1)
-            invalid_datapoints_min(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], value)
 
         elif y_data == "6.1f_biasvoltage":
             values = st.slider(
                 "Choisissez une intervalle costumisée 👇",
                 -110.0,
                 -120.0,
-                (-110.0, -120.0),
+                (
+                    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"],
+                    st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["max"],
+                ),
                 step=0.001,
+                on_change=slide_change_fonct_minmax,
+                args=(y_data,),
+                key=f"slider_{y_data}",
             )
             invalid_datapoints_minmax(
                 TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], values[0], values[1]
             )
+        elif y_data == "5.2f_flow":
+            value = st.slider(
+                "Choisissez une intervalle costumisée 👇",
+                1.0,
+                10.0,
+                st.session_state["yaml"]["Pdm_TEI48_Fonct"][y_data]["min"],
+                on_change=slide_change_fonct_min,
+                args=(y_data,),
+                key=f"slider_{y_data}",
+            )
+            invalid_datapoints_min(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], value)
         else:
             fig = px.line(TEI48_Fonct, x="20t_Date", y=y_data)
             st.plotly_chart(fig, use_container_width=True)
 
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Fonct.describe().loc[["min", "max", "mean", "count"]])
+
+        st.download_button(
+            label="Télécharger les paramètres de fonctionnement (yaml)",
+            data=export_yaml_file(st.session_state["yaml"]),
+            file_name="config.yaml",
+            key="YAML48F",
+        )
 
     else:
         st.error(
@@ -152,14 +195,26 @@ def zero_TEI48():
 
         if y_data == "5d_moy":
             values = st.slider(
-                "Choisissez une valeur minimum costumisée 👇", -20, 20, 20
+                "Choisissez une valeur maximum costumisée 👇",
+                -20,
+                20,
+                st.session_state["yaml"]["Pdm_TEI48_Zero"][y_data]["max"],
+                on_change=slide_change_zero,
+                args=(y_data,),
+                key=f"slider_{y_data}",
             )
             invalid_datapoints_max(
                 TEI48_Zero["20t_DateZero"], TEI48_Zero[y_data], values
             )
         elif y_data == "5.1f_ect":
             values = st.slider(
-                "Choisissez une valeur maximum costumisée 👇", -10, 50, 50
+                "Choisissez une valeur maximum costumisée 👇",
+                -10,
+                50,
+                st.session_state["yaml"]["Pdm_TEI48_Zero"][y_data]["max"],
+                on_change=slide_change_zero,
+                args=(y_data,),
+                key=f"slider_{y_data}",
             )
             invalid_datapoints_max(
                 TEI48_Zero["20t_DateZero"], TEI48_Zero[y_data], values
@@ -170,7 +225,14 @@ def zero_TEI48():
 
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Zero.describe().loc[["min", "max", "mean", "count"]])
+
+        st.download_button(
+            label="Télécharger les paramètres de fonctionnement (yaml)",
+            data=export_yaml_file(st.session_state["yaml"]),
+            file_name="config.yaml",
+            key="YAML48Z",
+        )
     else:
         st.error(
-            "Pdm_TEI49_Zero n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
+            "Pdm_TEI48_Zero n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
         )

@@ -1,5 +1,5 @@
 import streamlit as st
-from helpers.utils import df_resample_mean
+from helpers.utils import df_resample_mean, export_yaml_file
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -103,6 +103,13 @@ def fonct_TEI49():
 
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Fonct.describe().loc[["min", "max", "mean", "count"]])
+
+        st.download_button(
+            label="Télécharger les paramètres de fonctionnement (yaml)",
+            data=export_yaml_file(st.session_state["yaml"]),
+            file_name="config.yaml",
+            key="YAML49F",
+        )
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."

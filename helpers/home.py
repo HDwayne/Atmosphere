@@ -16,7 +16,7 @@ from helpers.TEI48 import *
 from helpers.TEI49 import *
 
 
-DEFULT_YAML = {
+DEFAULT_YAML = {
     "Pdm_TEI49_Fonct": {
         "4.2f_flowA": {"min": 1.0},
         "4.2f_flowB": {"min": 1.0},
@@ -42,7 +42,7 @@ def send_data():
         data = load_yaml_file(yaml_file)
         st.session_state["yaml"] = data
     else:
-        st.session_state["yaml"] = DEFULT_YAML
+        st.session_state["yaml"] = DEFAULT_YAML
 
     if st.session_state["upload_zip"] is not None:
         zip_file = st.session_state["upload_zip"]
@@ -109,7 +109,7 @@ def home():
             # download default yaml file
             st.download_button(
                 label="Télécharger le template YAML",
-                data=export_yaml_file(DEFULT_YAML),
+                data=export_yaml_file(DEFAULT_YAML),
                 file_name="template.yaml",
             )
     else:
@@ -138,19 +138,6 @@ def home():
         # commun footer
 
         print_widgets_separator()
-
-        # download_yaml = st.download_button(
-        #     label="Telecharger les paramètres de configuration de l'outil",
-        #     data=generate_zip(st.session_state["yaml"], "yaml"),
-        #     file_name="config.zip",
-        #     mime="",
-        # )
-        # if download_yaml:
-        #     st.write("Fichier téléchargé.")
-
-        if "yaml" in st.session_state:
-            st.write("Paramètres de configuration de l'outil :")
-            st.write(st.session_state["yaml"])
 
         with st.expander("Cliquez ici pour consulter les données brutes 👋"):
             number_file = getNumberFileImpoted()
