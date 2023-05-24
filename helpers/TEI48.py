@@ -76,13 +76,22 @@ def fonct_TEI48():
         )
         
         if y_data == "6.4f_ratio":
-            invalid_datapoints_minmax(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], 1.1, 1.2)
+            values = st.slider('Choisissez une intervalle costumisée 👇', 1.1, 1.2, (1.1, 1.2), step=0.0001)
+            st.write("Valeur minimum choisie = ", values[0], "Valeur maximum choisie = ", values[1])
+            invalid_datapoints_minmax(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], values[0], values[1])
+
         elif y_data == "6.0f_agci":
-            invalid_datapoints_minmax(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], 190000, 210000)
+            values = st.slider('Choisissez une intervalle costumisée 👇', 190000, 210000, (190000, 210000))
+            invalid_datapoints_minmax(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], values[0], values[1])
+
         elif y_data == "5.2f_flow":
-            invalid_datapoints_min(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], 1)
+            value = st.slider('Choisissez une intervalle costumisée 👇', 1, 10, 1)
+            invalid_datapoints_min(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], value)
+
         elif y_data == "6.1f_biasvoltage":
-            invalid_datapoints_minmax(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], -110, -120)
+            values = st.slider('Choisissez une intervalle costumisée 👇', -110.0, -120.0, (-110.0, -120.0), step=0.001)
+            invalid_datapoints_minmax(TEI48_Fonct["20t_Date"], TEI48_Fonct[y_data], values[0], values[1])
+
         else:        
             fig = px.line(TEI48_Fonct, x="20t_Date", y=y_data)
             st.plotly_chart(fig, use_container_width=True)        

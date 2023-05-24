@@ -113,12 +113,10 @@ def data_TEI49():
         TEI49_Data_Filtre = TEI49_Data.copy()
         if st.button('filtre ebarbeur'):
             TEI49_Data_Filtre = filtre_ebarbeur(TEI49_Data, str(y_data), -999, 5, 10, 1)
-            #fig = px.line(TEI49_Data, x="20t_Date", y=y_data)
-            #fig.add_trace(go.Scatter(x=TEI49_Data_Filtre["20t_Date"], y=TEI49_Data_Filtre[y_data], mode='lines', name='Filtré', line=dict(color='red')))
+
             fig = px.line(TEI49_Data_Filtre, x="20t_Date", y=y_data, color_discrete_sequence=['teal'], labels="Données filtrées ("+str(y_data)+")")
             fig.update_traces(showlegend=True)
-            # Update the legend attributes
-            # fig.update_layout(legend=dict(title='Données filtrées')
+
             fig.add_trace(go.Scatter(x=TEI49_Data["20t_Date"], y=TEI49_Data[y_data], mode='lines', name='Données originales', line=dict(color='blue')))
             st.plotly_chart(fig, use_container_width=True)
             
@@ -149,13 +147,17 @@ def fonct_TEI49():
         )
 
         if y_data == "4.2f_flowA":
-            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], 1)
+            value = st.slider('Vous pouvez modifier la valeur minimum en glissant la barre ci-dessous 👇', 1.0, 100.0, 1.0, step=0.01)
+            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], value)
         elif y_data == "4.2f_flowB":
-            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], 1)
+            value = st.slider('Vous pouvez modifier la valeur minimum en glissant la barre ci-dessous 👇', 1.0, 100.0, 1.0, step=0.01)
+            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], value)
         elif y_data == "6d_cellAInt":
-            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], 80000)
+            value = st.slider('Vous pouvez modifier la valeur minimum en glissant la barre ci-dessous 👇', 80000, 1000000, 80000)
+            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], value)
         elif y_data == "6d_cellBInt":
-            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], 80000)
+            value = st.slider('Vous pouvez modifier la valeur minimum en glissant la barre ci-dessous 👇', 80000, 1000000, 80000)
+            invalid_datapoints_min(TEI49_Fonct["20t_Date"], TEI49_Fonct[y_data], value)
         else:
             fig = px.line(TEI49_Fonct, x="20t_Date", y=y_data)
             st.plotly_chart(fig, use_container_width=True)
