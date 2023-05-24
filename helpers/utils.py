@@ -353,19 +353,13 @@ def apply_time_dfs(
     for_each_df(dfs, apply_time_df, time_columns=time_columns, time_format=time_format)
 
 
-# def export_meandata(df):
-#     with open('output.txt', 'w') as f:
-#         f.write(df.describe().to_csv(sep='\t'))
-#     return f
-
-# @st.cache_data
-# def convert_df(df):
-#     return df.to_csv(index=False).encode('utf-8')
-
-
 def load_yaml_file(uploaded_file):
     data = yaml.safe_load(uploaded_file)
     return data
+
+
+def export_yaml_file(data):
+    return yaml.dump(data)
 
 
 def df_resample_mean(df, freq, drop_col=[]):
