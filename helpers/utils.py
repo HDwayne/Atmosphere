@@ -362,9 +362,9 @@ def export_yaml_file(data):
     return yaml.dump(data)
 
 
-def df_resample_mean(df, freq, drop_col=[]):
+def df_resample_mean(df, freq, drop_col=[], time_col="20t_Date"):
     # Resample the data to 5-minute intervals
-    df = df.resample(freq, on="20t_Date").mean()
+    df = df.resample(freq, on=time_col).mean()
 
     # Extraire la date uniquement
     df["date"] = df.index.date
