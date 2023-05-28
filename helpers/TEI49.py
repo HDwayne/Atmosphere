@@ -3,7 +3,7 @@ from helpers.utils import df_resample_mean, export_yaml_file
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from helpers.filter import filtre_ebarbeur, invalid_datapoints_min
+from helpers.filter import trimming_filter, invalid_datapoints_min
 
 
 def apply_filter(df_smooth):
@@ -20,15 +20,10 @@ def data_TEI49():
         )
 
         fig = px.line(TEI49_Data, x="20t_Date", y=y_data)
-        st.plotly_chart(fig, use_container_width=True)
-
-        # bouton filtre ebarbeur
-        global iter  # nb d'itérations
-        global smooth_df  # df filtrée
+        st.plotly_chart(fig, use_container_width=True)  
 
         if st.button("filtre ebarbeur", key="49"):
-            smooth_df = filtre_ebarbeur(TEI49_Data, str(y_data), -999, 5, 6, 8000)
-
+            smooth_df = trimming_filter(TEI49_Data, str(y_data), 5, 50)
             fig = px.line(
                 smooth_df,
                 x="20t_Date",

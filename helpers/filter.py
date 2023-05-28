@@ -5,40 +5,42 @@ import streamlit as st
 
 
 
-def trimming_filter(df, time_column, data_columns, time_interval):
-    
+def trimming_filter(df, data_column, time_interval, num_points_to_fix):
+
+    #copies the inital dataframe
     smoothed_df = df.copy()
+    #array to store the filtered data
+    smoothed_data = []
 
-    for column in data_columns:
-        smoothed_data = []
+    for i in range(len(df)):
+        #time interval used for the sliding window 
+        start_time = df['20t_Date'][i] - pd.Timedelta(minutes=time_interval/2)
+        end_time = df['20t_Date'][i] + pd.Timedelta(minutes=time_interval/2)
+        window = df[(df['20t_Date'] >= start_time) & (df['20t_Date'] <= end_time)][data_column]
 
-        for i in range(len(df)):
-            start_time = df[time_column][i] - pd.Timedelta(minutes=time_interval/2)
-            end_time = df[time_column][i] + pd.Timedelta(minutes=time_interval/2)
+        #sort the values included in the window 
+        sorted_window = sorted(window)
+        #doesn't take the incorrect values into account
+        positive_values = list(filter(lambda x: x >= 0, sorted_window))
+        min_values = positive_values[:num_points_to_fix]
+        max_values = positive_values[-num_points_to_fix:]
+        
+        #calculation of the filtered dataframe
+        if df[data_column][i] in min_values and min_values and df[data_column][i] > 0:
+            min_values_sorted = sorted(min_values)
+            smoothed_value = min_values_sorted[1] if len(min_values_sorted) > 1 else min_values_sorted[0]
+        elif df[data_column][i] in max_values and max_values and df[data_column][i] > 0:
+            max_values_sorted = sorted(max_values)
+            smoothed_value = max_values_sorted[-2] if len(max_values_sorted) > 1 else max_values_sorted[-1]
+        else:
+            smoothed_value = df[data_column][i]
 
-            window = df[(df[time_column] >= start_time) & (df[time_column] <= end_time)][column]
+        smoothed_data.append(smoothed_value)
 
-            min_value = min(window)
-            max_value = max(window)
-
-            if df[column][i] == min_value:
-                smoothed_value = df[(df[time_column] >= start_time) & (df[time_column] <= end_time)][column].iloc[
-                    df[(df[time_column] >= start_time) & (df[time_column] <= end_time)][column].values.argmin()]
-            elif df[column][i] == max_value:
-                smoothed_value = df[(df[time_column] >= start_time) & (df[time_column] <= end_time)][column].iloc[
-                    df[(df[time_column] >= start_time) & (df[time_column] <= end_time)][column].values.argmax()]
-            else:
-                smoothed_value = df[column][i]
-
-            smoothed_data.append(smoothed_value)
-
-        smoothed_df[column] = smoothed_data
+    smoothed_df[data_column] = smoothed_data
 
     return smoothed_df
-            i_deb = jj
-            is_calcul = False
-            stat.clear()
-    return filtered_df
+
 
 
 def invalid_datapoints_minmax(x, y, min, max):

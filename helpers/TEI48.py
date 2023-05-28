@@ -51,10 +51,10 @@ def data_TEI48():
         fig = px.line(TEI48_Data, x="20t_Date", y=y_data)
         st.plotly_chart(fig, use_container_width=True)
 
-        global iter  # nb d'itérations
-        global smooth_df  # df filtrée
         if st.button("filtre ebarbeur", key="48"):
-            smooth_df = filtre_ebarbeur(TEI48_Data, str(y_data), -999, 5, 6, 8000)
+                
+            smooth_df = trimming_filter(TEI48_Data, str(y_data), 5, 50)
+
             fig = px.line(
                 smooth_df,
                 x="20t_Date",
