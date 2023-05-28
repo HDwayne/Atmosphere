@@ -1,5 +1,8 @@
 import pandas as pd
 import datetime
+import plotly.graph_objects as go
+import streamlit as st
+
 
 
 def trimming_filter(df, time_column, data_columns, time_interval):
@@ -32,3 +35,125 @@ def trimming_filter(df, time_column, data_columns, time_interval):
         smoothed_df[column] = smoothed_data
 
     return smoothed_df
+            i_deb = jj
+            is_calcul = False
+            stat.clear()
+    return filtered_df
+
+
+def invalid_datapoints_minmax(x, y, min, max):
+    # Define the interval and the color for points outside the interval
+    interval_min = min
+    interval_max = max
+    outside_color = "red"
+
+    # Create a list to store the colors of each data point
+    colors = []
+
+    # Iterate over the data points and assign colors based on the interval
+    for xi, yi in zip(x, y):
+        if yi < interval_min or yi > interval_max:
+            colors.append(outside_color)
+        else:
+            colors.append("blue")  # Default color for points inside the interval
+
+    # Create the line chart
+    fig = go.Figure(
+        data=go.Scatter(x=x, y=y, mode="lines+markers", marker=dict(color=colors))
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[None], y=[None], mode="markers", marker=dict(color="blue"), name="Valide"
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=[None],
+            y=[None],
+            mode="markers",
+            marker=dict(color="red"),
+            name="Non-valide",
+        )
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def invalid_datapoints_min(x, y, min):
+    # Define the interval and the color for points outside the interval
+    interval_min = min
+    outside_color = "red"
+
+    # Create a list to store the colors of each data point
+    colors = []
+
+    # Iterate over the data points and assign colors based on the interval
+    for xi, yi in zip(x, y):
+        if yi < interval_min:
+            colors.append(outside_color)
+        else:
+            colors.append("blue")  # Default color for points inside the interval
+
+    # Create the line chart
+    fig = go.Figure(
+        data=go.Scatter(x=x, y=y, mode="lines+markers", marker=dict(color=colors))
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[None], y=[None], mode="markers", marker=dict(color="blue"), name="Valide"
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=[None],
+            y=[None],
+            mode="markers",
+            marker=dict(color="red"),
+            name="Non-valide",
+        )
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def invalid_datapoints_max(x, y, max):
+    # Define the interval and the color for points outside the interval
+    interval_max = max
+    outside_color = "red"
+
+    # Create a list to store the colors of each data point
+    colors = []
+
+    # Iterate over the data points and assign colors based on the interval
+    for xi, yi in zip(x, y):
+        if yi > interval_max:
+            colors.append(outside_color)
+        else:
+            colors.append("blue")  # Default color for points inside the interval
+
+    # Create the line chart
+    fig = go.Figure(
+        data=go.Scatter(x=x, y=y, mode="lines+markers", marker=dict(color=colors))
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[None], y=[None], mode="markers", marker=dict(color="blue"), name="Valide"
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=[None],
+            y=[None],
+            mode="markers",
+            marker=dict(color="red"),
+            name="Non-valide",
+        )
+    )
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
