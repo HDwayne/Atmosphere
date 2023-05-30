@@ -34,8 +34,8 @@ def generate_data():
         st.session_state["dfs"]["Pdm_TEI48_Zero"], "5T", time_col="20t_DateZero"
     )
 
-    with st.expander("NEED HELP", expanded=False):
-        st.write(maindata, fonctdata, zerodata)
+    #with st.expander("NEED HELP", expanded=False):
+    #    st.write(maindata, fonctdata, zerodata)
 
     return maindata.to_csv(sep=";")
 
@@ -51,7 +51,7 @@ def data_TEI48():
         fig = px.line(TEI48_Data, x="20t_Date", y=y_data)
         st.plotly_chart(fig, use_container_width=True)
 
-        if st.button("filtre ebarbeur", key="48"):
+        if st.button("Appliquer le filtre ebarbeur", key="48"):
                 
             smooth_df = trimming_filter(TEI48_Data, str(y_data), 5, 35)
 

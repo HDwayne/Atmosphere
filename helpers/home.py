@@ -82,10 +82,10 @@ def home():
                 key="upload_zip",
             )
             st.file_uploader(
-                "Upload YAML File", type=["yaml", "yml"], key="upload_yaml"
+                "Déposez le fichier YAML (Optionnel)", type=["yaml", "yml"], key="upload_yaml"
             )
             st.form_submit_button(
-                label="submit",
+                label="Mettre en ligne",
                 on_click=send_data,
             )
 
@@ -103,7 +103,7 @@ def home():
 
         if "yaml" not in st.session_state:
             st.info(
-                "YAML file is optional, if you don't upload it, default values will be used."
+                "Le fichier YAML est optionnel. En cas de son absence, les valeurs par défaut seront mises."
             )
 
             # download default yaml file
