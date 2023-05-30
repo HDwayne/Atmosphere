@@ -29,7 +29,7 @@ def show_Laero_logo(width, padding, margin):
     padding_top, padding_right, padding_bottom, padding_left = padding
     margin_top, margin_right, margin_bottom, margin_left = margin
 
-    with open("assets/Laero_bg.png", "rb") as f:
+    with open("assets/Atmosphere.png", "rb") as f:
         data = f.read()
 
     bin_str = base64.b64encode(data).decode()
