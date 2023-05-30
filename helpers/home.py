@@ -103,7 +103,7 @@ def home():
 
         if "yaml" not in st.session_state:
             st.info(
-                "YAML file is optional, if you don't upload it, default values will be used."
+                "Le fichier YAML est optionnel. En cas de son absence, les valeurs par défaut seront mises."
             )
 
             # download default yaml file
