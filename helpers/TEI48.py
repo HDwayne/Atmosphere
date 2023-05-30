@@ -34,8 +34,8 @@ def generate_data():
         st.session_state["dfs"]["Pdm_TEI48_Zero"], "5T", time_col="20t_DateZero"
     )
 
-    with st.expander("NEED HELP", expanded=False):
-        st.write(maindata, fonctdata, zerodata)
+    #with st.expander("NEED HELP", expanded=False):
+    #    st.write(maindata, fonctdata, zerodata)
 
     return maindata.to_csv(sep=";")
 
