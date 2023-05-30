@@ -53,7 +53,7 @@ def data_TEI48():
 
         if st.button("filtre ebarbeur", key="48"):
                 
-            smooth_df = trimming_filter(TEI48_Data, str(y_data), 5, 50)
+            smooth_df = trimming_filter(TEI48_Data, str(y_data), 5, 35)
 
             fig = px.line(
                 smooth_df,

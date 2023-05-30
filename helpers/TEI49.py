@@ -10,9 +10,11 @@ def apply_filter(df_smooth):
     st.session_state["dfs"]["Pdm_TEI49_Data"] = df_smooth
 
 
+
 def data_TEI49():
     if "Pdm_TEI49_Data" in st.session_state["dfs"]:
-        TEI49_Data = st.session_state["dfs"]["Pdm_TEI49_Data"]
+        
+        TEI49_Data = st.session_state["dfs"]["Pdm_TEI49_Data"]     
 
         y_data = st.selectbox(
             "Veuillez choisir les données pour l'axe y.",
@@ -23,7 +25,7 @@ def data_TEI49():
         st.plotly_chart(fig, use_container_width=True)  
 
         if st.button("filtre ebarbeur", key="49"):
-            smooth_df = trimming_filter(TEI49_Data, str(y_data), 5, 50)
+            smooth_df = trimming_filter(TEI49_Data, str(y_data), 5, 35)
             fig = px.line(
                 smooth_df,
                 x="20t_Date",
