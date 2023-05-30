@@ -82,10 +82,10 @@ def home():
                 key="upload_zip",
             )
             st.file_uploader(
-                "Upload YAML File", type=["yaml", "yml"], key="upload_yaml"
+                "Déposez le fichier YAML (Optionnel)", type=["yaml", "yml"], key="upload_yaml"
             )
             st.form_submit_button(
-                label="submit",
+                label="Mettre en ligne",
                 on_click=send_data,
             )
 
