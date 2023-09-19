@@ -25,21 +25,6 @@ def apply_filter(df_smooth):
     st.session_state["dfs"]["Pdm_TEI48_Data"] = df_smooth
 
 
-def generate_data():
-    maindata = df_resample_mean(
-        st.session_state["dfs"]["Pdm_TEI48_Data"], "5T", ["5d_CO"]
-    )
-    fonctdata = df_resample_mean(st.session_state["dfs"]["Pdm_TEI48_Fonct"], "5T")
-    zerodata = df_resample_mean(
-        st.session_state["dfs"]["Pdm_TEI48_Zero"], "5T", time_col="20t_DateZero"
-    )
-
-    #with st.expander("NEED HELP", expanded=False):
-    #    st.write(maindata, fonctdata, zerodata)
-
-    return maindata.to_csv(sep=";")
-
-
 def data_TEI48():
     if "Pdm_TEI48_Data" in st.session_state["dfs"]:
         TEI48_Data = st.session_state["dfs"]["Pdm_TEI48_Data"]
@@ -81,12 +66,15 @@ def data_TEI48():
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Data.describe().loc[["min", "max", "mean", "count"]])
 
-        st.download_button(
-            label=f"Télécharger les données moyénnées (pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt)",
-            data=generate_data(),
-            file_name=f"pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt",
-            mime="text/plain",
-        )
+        if st.button("Préparer les données moyénnées", key="compute48"):
+            data = df_resample_mean(TEI48_Data, "5T", 48, ["5d_CO"]).to_csv(sep=";")
+            st.download_button(
+                key="download_data48",
+                label=f"Télécharger les données moyénnées (pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt)",
+                data=data,
+                file_name=f"pdm_coanalyzer_L2a_CO_{st.session_state.date}_V01.txt",
+                mime="text/plain",
+            )
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
@@ -177,12 +165,13 @@ def fonct_TEI48():
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Fonct.describe().loc[["min", "max", "mean", "count"]])
 
-        st.download_button(
-            label="Télécharger les paramètres de fonctionnement (yaml)",
-            data=export_yaml_file(st.session_state["yaml"]),
-            file_name="config.yaml",
-            key="YAML48F",
-        )
+        if st.button("Préparer les paramètres de fonctionnement", key="CYAML48F"):
+            st.download_button(
+                label="Télécharger les paramètres de fonctionnement (yaml)",
+                data=export_yaml_file(st.session_state["yaml"]),
+                file_name="config.yaml",
+                key="YAML48F",
+            )
 
     else:
         st.error(
@@ -239,12 +228,13 @@ def zero_TEI48():
         st.write("Statistiques sur les données brutes")
         st.write(TEI48_Zero.describe().loc[["min", "max", "mean", "count"]])
 
-        st.download_button(
-            label="Télécharger les paramètres de fonctionnement (yaml)",
-            data=export_yaml_file(st.session_state["yaml"]),
-            file_name="config.yaml",
-            key="YAML48Z",
-        )
+        if st.button("Préparer les paramètres de fonctionnement", key="CYAML48Z"):
+            st.download_button(
+                label="Télécharger les paramètres de fonctionnement (yaml)",
+                data=export_yaml_file(st.session_state["yaml"]),
+                file_name="config.yaml",
+                key="YAML48Z",
+            )
     else:
         st.error(
             "Pdm_TEI48_Zero n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."

@@ -5,25 +5,6 @@ import pandas as pd
 import streamlit as st
 import yaml
 
-
-def print_widgets_separator(n=1, sidebar=False):
-    """
-    Prints customized separation line on sidebar
-    """
-    html = """<hr style="height:1px;
-            border:none;color:#fff;
-            background-color:#999;
-            margin-top:5px;
-            margin-bottom:10px"
-            />"""
-
-    for _ in range(n):
-        if sidebar:
-            st.sidebar.markdown(html, unsafe_allow_html=True)
-        else:
-            st.markdown(html, unsafe_allow_html=True)
-
-
 @st.cache_data
 def show_Laero_logo(width, padding, margin):
     padding_top, padding_right, padding_bottom, padding_left = padding
@@ -216,14 +197,6 @@ def deleteDateFromFileNames(file_name: str) -> str:
     return info[0] + "_" + info[1] + "_" + info[2]
 
 
-# def delete_session_state() -> None:
-#     """
-#     Delete all session state variables
-#     """
-#     for key in st.session_state.keys():
-#         del st.session_state[key]
-
-
 def delete_session_state_rule(rule: callable, **kwargs) -> None:
     """
     Delete all session state variables
@@ -362,7 +335,55 @@ def export_yaml_file(data):
     return yaml.dump(data)
 
 
-def df_resample_mean(df, freq, drop_col=[], time_col="20t_Date"):
+def getInvalidDate49():
+    invalid_date = []
+    TEI49_Fonct = st.session_state["dfs"]["Pdm_TEI49_Fonct"]
+    Filters = st.session_state["yaml"]["Pdm_TEI49_Fonct"]
+    for index, row in TEI49_Fonct.iterrows():
+        for col in TEI49_Fonct.columns:
+            if col in Filters:
+                if row[col] < Filters[col]["min"]:
+                    invalid_date.append(row["20t_Date"])
+    return invalid_date
+
+
+def getInvalidDate48():
+    invalid_date = []
+
+    TEI48_Fonct = st.session_state["dfs"]["Pdm_TEI48_Fonct"]
+    TEI48_Zero = st.session_state["dfs"]["Pdm_TEI48_Zero"]
+    FiltersFonct = st.session_state["yaml"]["Pdm_TEI48_Fonct"]
+    FiltersZero = st.session_state["yaml"]["Pdm_TEI48_Zero"]
+    
+    for index, row in TEI48_Fonct.iterrows():
+        for col, filter_values in FiltersFonct.items():
+            value = row[col]
+            min_value = filter_values.get("min")
+            max_value = filter_values.get("max")
+
+            if min_value is not None and max_value and max_value <= min_value < 0:
+                if min_value >= value >= max_value:
+                    continue
+            else:
+                if min_value is not None and value < min_value:
+                    invalid_date.append(row["20t_Date"])
+                    break
+
+                if max_value is not None and value > max_value:
+                    invalid_date.append(row["20t_Date"])
+                    break
+    
+    for index, row in TEI48_Zero.iterrows():
+        for col in TEI48_Zero.columns:
+            if col in FiltersZero:
+                if row[col] > FiltersZero[col]["max"]:
+                    invalid_date.append(row["20t_DateZero"])
+                    break
+
+    return invalid_date
+
+
+def df_resample_mean(df, freq, type, drop_col=[], time_col="20t_Date"):
     # Resample the data to 5-minute intervals
     df = df.resample(freq, on=time_col).mean()
 
@@ -393,4 +414,16 @@ def df_resample_mean(df, freq, drop_col=[], time_col="20t_Date"):
     # passer les colonnes en int
     df = df.astype(int)
 
+    if type == 49:
+        invalid_dates = getInvalidDate49()
+        colonne_a_remplacer = '4d_Ozone'
+        marge_de_temps = pd.to_timedelta('5 minutes')
+        for invalid_date in invalid_dates:
+            df.loc[(abs(df.index - invalid_date) < marge_de_temps), colonne_a_remplacer] = -9999
+    elif type == 48:
+        invalid_dates = getInvalidDate48()
+        colonne_a_remplacer = '5d_COvrai'
+        marge_de_temps = pd.to_timedelta('5 minutes')
+        for invalid_date in invalid_dates:
+            df.loc[(abs(df.index - invalid_date) < marge_de_temps), colonne_a_remplacer] = -9999
     return df

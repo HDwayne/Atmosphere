@@ -52,12 +52,15 @@ def data_TEI49():
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Data.describe().loc[["min", "max", "mean", "count"]])
 
-        st.download_button(
-            label=f"Télécharger les données moyénnées (pdm_o3analyzer_L2a_O3_{st.session_state.date}_V01.txt)",
-            data=df_resample_mean(TEI49_Data, "5T", ["4d_Pression"]).to_csv(sep=";"),
-            file_name=f"pdm_o3analyzer_L2a_O3_{st.session_state.date}_V01.txt",
-            mime="text/plain",
-        )
+        if st.button("Préparer les données moyénnées", key="compute49"):
+            data = df_resample_mean(TEI49_Data, "5T", 49, ["4d_Pression"]).to_csv(sep=";")
+            st.download_button(
+                key="download_data49",
+                label=f"Télécharger les données moyénnées (pdm_o3analyzer_L2a_O3_{st.session_state.date}_V01.txt)",
+                data=data,
+                file_name=f"pdm_o3analyzer_L2a_O3_{st.session_state.date}_V01.txt",
+                mime="text/plain",
+            )
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."
@@ -100,12 +103,13 @@ def fonct_TEI49():
         st.write("Statistiques sur les données brutes")
         st.write(TEI49_Fonct.describe().loc[["min", "max", "mean", "count"]])
 
-        st.download_button(
-            label="Télécharger les paramètres de fonctionnement (yaml)",
-            data=export_yaml_file(st.session_state["yaml"]),
-            file_name="config.yaml",
-            key="YAML49F",
-        )
+        if st.button("Préparer les paramètres de fonctionnement", key="CYAML49F"):
+            st.download_button(
+                label="Télécharger les paramètres de fonctionnement (yaml)",
+                data=export_yaml_file(st.session_state["yaml"]),
+                file_name="config.yaml",
+                key="YAML49F",
+            )
     else:
         st.error(
             "Pdm_TEI49_Data n'est pas dans la session. Merci de charger une archive contenant les données nécessaires."

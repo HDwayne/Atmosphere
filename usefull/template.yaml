@@ -1,0 +1,26 @@
+Pdm_TEI48_Fonct:
+  5.2f_flow:
+    min: 1.0
+  6.0f_agci:
+    max: 210000
+    min: 190000
+  6.1f_biasvoltage:
+    max: -120.0
+    min: -110.0
+  6.4f_ratio:
+    max: 1.2
+    min: 1.1
+Pdm_TEI48_Zero:
+  5.1f_ect:
+    max: 50
+  5d_moy:
+    max: 20
+Pdm_TEI49_Fonct:
+  4.2f_flowA:
+    min: 1.0
+  4.2f_flowB:
+    min: 1.0
+  6d_cellAInt:
+    min: 80000
+  6d_cellBInt:
+    min: 80000

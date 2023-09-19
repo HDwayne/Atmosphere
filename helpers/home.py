@@ -1,6 +1,5 @@
 import streamlit as st
 from helpers.utils import (
-    print_widgets_separator,
     show_Laero_logo,
     delete_session_state_rule,
     CheckZipFileName,
@@ -53,14 +52,10 @@ def send_data():
             delete_session_state_rule(checkFileName)
 
             # add file to session state
-            added_file = dfs_to_session_state(read_zip_file(zip_file))
+            dfs_to_session_state(read_zip_file(zip_file))
 
             # save date in session state
             st.session_state["date"] = getDateFromZipFileName(zip_file.name)
-
-            # st.sidebar.success(
-            #     f'Les fichiers suivants ont été ajoutés : {", ".join(added_file)}'
-            # )
 
 
 def home():
@@ -72,7 +67,6 @@ def home():
             unsafe_allow_html=True,
         )
 
-        print_widgets_separator(sidebar=True)
 
         with st.form("upload_form", clear_on_submit=True):
             st.file_uploader(
@@ -107,11 +101,12 @@ def home():
             )
 
             # download default yaml file
-            st.download_button(
-                label="Télécharger le template YAML",
-                data=export_yaml_file(DEFAULT_YAML),
-                file_name="template.yaml",
-            )
+            if st.button("Préparer le template YAML", key="CYAMLH"):
+                st.download_button(
+                    label="Télécharger le template YAML",
+                    data=export_yaml_file(DEFAULT_YAML),
+                    file_name="template.yaml",
+                )
     else:
         # display page
 
@@ -136,8 +131,6 @@ def home():
                 fonct_TEI49()
 
         # commun footer
-
-        print_widgets_separator()
 
         with st.expander("Cliquez ici pour consulter les données brutes 👋"):
             number_file = getNumberFileImpoted()
